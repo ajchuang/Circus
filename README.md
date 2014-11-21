@@ -18,3 +18,16 @@ DESIGN SPEC
     - SDN related
         - a table of existing flows (configured by controller)
             - in port : out port : lambda_in : lambda_out : time_slot 
+            
+CONFIG FILE (to discuss)
+======
+/* controller config */
+CONTROLLER IP TCP_PORT NUM_SWITCHES
+
+/* switch map */
+MAC_ADDR UDP_PORT
+...
+
+/* switch connection config */
+MAC_ADDR PORT_CNT PORT_CONN_1 PORT_CONN_2 ...
+...            

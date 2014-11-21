@@ -6,4 +6,4 @@ echo compiling
 javac *.java
 
 echo starting
-java Circus
+java Circus config.txt
