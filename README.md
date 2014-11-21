@@ -22,12 +22,12 @@ DESIGN SPEC
 CONFIG FILE (to discuss)
 ======
 /* controller config */
-CONTROLLER IP TCP_PORT NUM_SWITCHES
+CONTROLLER_IP TCP_PORT NUM_SWITCHES
 
 /* switch map */
-MAC_ADDR UDP_PORT
+SWITCH_ID IP_ADDR UDP_PORT
 ...
 
 /* switch connection config */
-MAC_ADDR PORT_CNT PORT_CONN_1 PORT_CONN_2 ...
+SWITCH_ID PORT_CNT PORT_CONN_1(SWITCH_ID) PORT_CONN_2 ...
 ...            
