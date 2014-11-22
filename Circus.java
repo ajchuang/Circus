@@ -64,7 +64,6 @@ public class Circus {
                 }
                 
                 String line = input.nextLine ();
-                log (line);
                 
                 // comment line
                 if (line.startsWith ("#") || line.trim ().isEmpty ()) {
@@ -84,7 +83,39 @@ public class Circus {
             }
 
             /* read sw connection map */
-            /* TODO */
+            for (int i = 0; i < sw_counter; ++i) {
+                
+                if (input.hasNextLine () == false) {
+                    log ("config file format error");
+                    System.exit (0);
+                }
+                
+                String line = input.nextLine ();
+                
+                if (line.startsWith ("#") || line.trim ().isEmpty ()) {
+                    i--;
+                    continue;
+                }
+                
+                String toks[] = line.split ("\\s+");
+                
+                if (toks.length < 3) {
+                    log ("config file format error");
+                    System.exit (0);
+                }
+                
+                String id = toks[0];
+                int pcnt = Integer.parseInt (toks[1]);
+                cfg.addSwCfg (id, toks[1]);
+                
+                if (toks.length != pcnt + 2) {
+                    log ("config file format error");
+                    System.exit (0);
+                }
+                
+                for (int j = 0; j < pcnt; ++j)
+                    cfg.addSwPortCfg (id, j, toks[2 + j]);
+            }
 
             /* close file */
             input.close ();

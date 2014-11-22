@@ -82,24 +82,33 @@ public class CircusConfig {
         int id = Integer.parseInt (sid);
         Integer iid = Integer.valueOf (id);
         
-        if (m_swCfg.containsKey (iid)) {
-            Circus.log ("duplicate id: " + sid);
+        if (m_swList.containsKey (iid) == false) {
+            Circus.log ("invalid key: " + sid);
+            System.exit (0);
+        }
+        
+        if (m_swCfg.containsKey (iid) == true) {
+            Circus.log ("dup key: " + sid);
             System.exit (0);
         }
         
         Properties prop = new Properties ();
+        prop.setProperty (m_propPortCnt, sPortCnt);
+        
         m_swCfg.put (iid, prop);
         
-        prop.setProperty (m_propPortCnt, sPortCnt);
+        Circus.log ("switch " + sid + " is installed");
     }
     
     /* add switch connection config */
     public void addSwPortCfg (String sid, int port_id, String to_id) {
         
+        Circus.log ("addSwPortCfg: " + sid + ":" + port_id + ":" + to_id);
+        
         int id = Integer.parseInt (sid);
         Integer iid = Integer.valueOf (id);
         
-        if (!m_swCfg.containsKey (iid)) {
+        if (m_swCfg.containsKey (iid) == false) {
             Circus.log ("invalid id: " + sid);
             System.exit (0);
         }
