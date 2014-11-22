@@ -21,7 +21,10 @@ public class Circus {
     public boolean parseConfig () {
         
         /* local vars */
+        int sw_counter = 0;
         CircusConfig cfg = CircusConfig.getConfig ();
+        
+        
         log ("parsing config file");
         
         try {
@@ -48,24 +51,40 @@ public class Circus {
                 /* setup configuration */
                 cfg.setCntlAddr (tks[0], tks[1]);
                 cfg.setSwCnt (tks[2]);
+                sw_counter = cfg.getSwCnt ();
                 break;
             }
-
+            
             /* read sw table */
-            while (input.hasNext ()) {
+            for (int i = 0; i < sw_counter; ++i) {
+                
+                if (input.hasNextLine () == false) {
+                    log ("config file format error");
+                    System.exit (0);
+                }
                 
                 String line = input.nextLine ();
+                log (line);
                 
                 // comment line
-                if (line.startsWith ("#") || line.trim ().isEmpty ())
+                if (line.startsWith ("#") || line.trim ().isEmpty ()) {
+                    i--;
                     continue;
+                }
                 
                 /* read switch map */
                 String toks[] = line.split ("\\s+");
-                cfg.addSwList (toks[0], toks[1], toks[2]);
+                
+                if (toks.length == 3)
+                    cfg.addSwList (toks[0], toks[1], toks[2]);
+                else {
+                    log ("config file format error");
+                    System.exit (0);
+                }
             }
-            
+
             /* read sw connection map */
+            /* TODO */
 
             /* close file */
             input.close ();

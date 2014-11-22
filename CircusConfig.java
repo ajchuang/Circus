@@ -53,6 +53,10 @@ public class CircusConfig {
         m_swCnt = Integer.parseInt (swCnt);
     }
     
+    public int getSwCnt () {
+        return m_swCnt;
+    }
+    
     public void addSwList (String sid, String sip, String sport) {
         
         int id = Integer.parseInt (sid);
