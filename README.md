@@ -28,6 +28,13 @@ CONTROLLER_IP TCP_PORT NUM_SWITCHES
 SWITCH_ID IP_ADDR UDP_PORT
 ...
 
-/* switch connection config */
-SWITCH_ID PORT_CNT PORT_CONN_1(SWITCH_ID) PORT_CONN_2 ...
+/* switch connection config --> every switch is iwth*/
+SWITCH_ID CS_PORT_CNT
+
+    /* CS Config */
+    PORT_CONN_1(SWITCH_ID) PORT_CONN_2 ...
+    
+    /* PS Config */
+    /* To define */
+    
 ...            

@@ -1,2 +1,11 @@
+# controller config
 127.0.0.1 8888  1
-1 7000 4 -1 -1 -1 -1
+
+# switch map
+
+# Switch 1
+1 7000 4 
+-1 
+-1 
+-1 
+-1
