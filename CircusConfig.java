@@ -76,6 +76,32 @@ public class CircusConfig {
         Circus.log ("Switch " + sid + " added ( " + sip + ":" + sport + " )");
     }
     
+    public String getSwAddr (int id) {
+        
+        Integer iid = Integer.valueOf (id);
+        
+        if (m_swList.containsKey (iid) == false) {
+            Circus.log ("Use an invalid key: " + id);
+            return null;
+        } 
+        
+        Properties p = m_swList.get (iid);
+        return p.getProperty (m_propAddr);
+    }
+    
+    public int getSwPort (int id) {
+        
+        Integer iid = Integer.valueOf (id);
+        
+        if (m_swList.containsKey (iid) == false) {
+            Circus.log ("Use an invalid key: " + id);
+            return -1;
+        } 
+        
+        Properties p = m_swList.get (iid);
+        return Integer.parseInt (p.getProperty (m_propPort));
+    }
+    
     /* add switch port count config */
     public void addSwCfg (String sid, String sPortCnt) {
         
