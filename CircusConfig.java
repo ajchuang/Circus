@@ -49,6 +49,14 @@ public class CircusConfig {
         }
     }
     
+    public InetAddress getCntlAddr () {
+        return m_cntlAddr;
+    }
+    
+    public int getCntlPort () {
+        return m_cntlPort;
+    }
+    
     public void setSwCnt (String swCnt) {
         m_swCnt = Integer.parseInt (swCnt);
     }
