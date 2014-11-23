@@ -84,6 +84,26 @@ public class CPacket {
         m_data = data;
     }
     
+    public int getFromSw () {
+        return m_swFrom;
+    }
+    
+    public int getToSw () {
+        return m_swTo;
+    }
+    
+    public int getLambda () {
+        return m_lambda;
+    }
+    
+    public int getTdmId () {
+        return m_tdmId;
+    }
+    
+    public byte[] getData () {
+        return m_data;
+    }
+    
     public byte[] pack () {
         
         byte[] buf = new byte[16 + m_data.length];
