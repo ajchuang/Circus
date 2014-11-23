@@ -21,26 +21,21 @@ public class CPacket {
     /* lambda   : param     */
     /* tdm_id   : param     */
     /* data     : data      */   
-    public static void transmit (int from, int to, int lambda, int tdm_id, byte[] data) {
+    public static void transmit (CPacket cp) {
         
         CircusConfig cfg = CircusConfig.getConfig ();
         
         /* lookup PS info */
-        String ip = cfg.getSwAddr (to);
-        int port = cfg.getSwPort (to);
+        String ip = cfg.getSwAddr (cp.getToSw ());
+        int port = cfg.getSwPort (cp.getToSw ());
         
         if (ip == null || port == -1) {
-            log ("unknown destination switch id: " + to + ":" + port);
+            log ("unknown destination switch id");
             return;
         }
         
-        CPacket p = new CPacket ();
-        p.setFromSw (from);
-        p.setToSw (to);
-        p.setLambda (lambda);
-        p.setTdmId (tdm_id);
-        p.setData (data);
-        byte[] raw = p.pack ();
+        /* do packeting */
+        byte[] raw = cp.pack ();
 
         /* do sending */
         try {
