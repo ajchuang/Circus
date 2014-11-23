@@ -26,13 +26,14 @@ public class CircusConfig {
     /* singleton implementation */
     private CircusConfig () {
         m_swList = new HashMap<Integer, Properties> ();
+                            //switch_ID, (IP; Port)
         m_swCfg = new HashMap<Integer, Properties> ();
+                            //switch_ID, (ID )
     }
     
     public static CircusConfig getConfig () {
         if (sm_cfg == null)
             sm_cfg = new CircusConfig ();
-            
         return sm_cfg;
     }
     
@@ -65,7 +66,7 @@ public class CircusConfig {
         return m_swCnt;
     }
     
-    public void addSwList (String sid, String sip, String sport) {
+    public void addSwList (String sid, String sip, String sport) {//sip==switch IP; sport==switch port
         
         int id = Integer.parseInt (sid);
         Integer iid = Integer.valueOf (id);
