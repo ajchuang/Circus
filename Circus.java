@@ -73,8 +73,8 @@ public class Circus {
                 /* read switch map */
                 String toks[] = line.split ("\\s+");
                 
-                if (toks.length == 4)
-                    cfg.addSwList (toks[0], toks[1], toks[2], toks[3]);
+                if (toks.length == 6)
+                    cfg.addSwList (toks[0], toks[1], toks[2], toks[3], toks[4], toks[5]);
                 else {
                     log ("config file format error");
                     System.exit (0);
@@ -137,7 +137,12 @@ public class Circus {
         /* start switches one after another */
         /* assuming that switch id starting from 1 */
         for (int i = 1; i < cfg.getSwCnt () + 1; ++i) {
-            CSwitch cs = new CSwitch (i);
+            
+            /* depending on the PS-CS / CS setting */
+            if (cfg.getDualState (i))
+                new CPSwitch (i);
+            else
+                new CSwitch (i);
         }
     }
     

@@ -7,7 +7,7 @@ import java.util.*;
 import java.nio.*;
 import java.nio.channels.*;
 
-public class CSwitch {
+public class CSwitch implements DebugInterface {
 	final static String dest = "destID";
     final static String length = "length";
     
@@ -40,7 +40,7 @@ public class CSwitch {
         /* starting servers */
     	new Thread (new UDPListen ()).start();
     	new Thread (new TCPListen ()).start();
-        new Thread (new DebugServer (dbg_port)).start();
+        new Thread (new DebugServer (dbg_port, this)).start();
     }
     
     public boolean insertcircuit(int srcID, int inlength, int TDID, int destID, int outlength){
@@ -115,6 +115,19 @@ public class CSwitch {
         return true;
     }
     
+    /* implement DebugInterface */
+    public void processCmd (String cmd, PrintStream os) {
+        CSwitch.log ("dbg command: " + cmd);
+            
+        if (cmd.equals ("id")) {
+            os.println ("switch id: " + selfID);
+        } else if (cmd.equals ("dump ctable")) {
+            //os.println (circuit_table.toString ());
+        } else {
+            os.println ("unknown command: " + cmd);
+        }
+    }
+    
     public class UDPListen implements Runnable {
         
         /* note: the packet should be smaller than 2048 bytes */
@@ -173,21 +186,11 @@ public class CSwitch {
     public class DebugServer implements Runnable {
         
         int m_dbgPort;
+        DebugInterface m_dif;
         
-        public DebugServer (int dport) {
+        public DebugServer (int dport, DebugInterface dif) {
             m_dbgPort = dport;
-        }
-        
-        void procCmd (String cmd, PrintStream os) {
-            CSwitch.log ("dbg command: " + cmd);
-            
-            if (cmd.equals ("id")) {
-                os.println ("switch id: " + selfID);
-            } else if (cmd.equals ("dump ctable")) {
-                //os.println (circuit_table.toString ());
-            } else {
-                os.println ("unknown command: " + cmd);
-            }
+            m_dif = dif;
         }
         
         public void run () {
@@ -222,7 +225,7 @@ public class CSwitch {
                             
                         /* parsing commands, and do something here */
                         CSwitch.log (cmd);
-                        procCmd (cmd, out);
+                        m_dif.processCmd (cmd, out);
                     }
                     
                     /* clean up */

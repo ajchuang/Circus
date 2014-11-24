@@ -20,6 +20,8 @@ public class CircusConfig {
     /* Property names */
     final static String m_propAddr = "IP";
     final static String m_propPort = "PORT";
+    final static String m_propDual = "DUAL";
+    final static String m_propPSport = "PSPORT";
     final static String m_propDport = "DPORT";
     final static String m_propPortCnt = "PORT_CNT";
     final static String m_propPortNum = "PORT_";
@@ -67,7 +69,9 @@ public class CircusConfig {
         return m_swCnt;
     }
     
-    public void addSwList (String sid, String sip, String sport, String dport) {
+    public void addSwList (
+        String sid, String sip, String sport, String dport,
+        String dual, String psport) {
         
         int id = Integer.parseInt (sid);
         Integer iid = Integer.valueOf (id);
@@ -83,8 +87,10 @@ public class CircusConfig {
         prop.setProperty (m_propAddr, sip);
         prop.setProperty (m_propPort, sport);
         prop.setProperty (m_propDport, dport);
+        prop.setProperty (m_propDual, dual);
+        prop.setProperty (m_propPSport, psport);
         
-        Circus.log ("Switch " + sid + " added ( " + sip + ":" + sport + " )");
+        Circus.log ("Switch " + sid + " added ( " + sip + ":" + sport + ":" + dual + ":" + psport + " )");
     }
     
     public String getSwAddr (int id) {
@@ -123,6 +129,33 @@ public class CircusConfig {
         
         Properties p = m_swList.get (iid);
         return Integer.parseInt (p.getProperty (m_propDport));
+    }
+    
+    public boolean getDualState (int id) {
+        Integer iid = Integer.valueOf (id);
+        
+        if (m_swList.containsKey (iid) == false) {
+            Circus.log ("Use an invalid key: " + id);
+            return false;
+        } 
+        
+        Properties p = m_swList.get (iid);
+        if (p.getProperty (m_propDual).equals ("P"))
+            return true;
+        else
+            return false;
+    }
+    
+    public int getPsPort (int id) {
+        Integer iid = Integer.valueOf (id);
+        
+        if (m_swList.containsKey (iid) == false) {
+            Circus.log ("Use an invalid key: " + id);
+            return -1;
+        } 
+        
+        Properties p = m_swList.get (iid);
+        return Integer.parseInt (p.getProperty (m_propPSport));
     }
     
     /* add switch port count config */

@@ -2,7 +2,8 @@
 127.0.0.1 8888  1
 
 # switch map
-1 127.0.0.1 7000 7001 
+# switch ID, IP address, data plane port, debug port, dual switch setting, PS port
+1 127.0.0.1 7000 7001 P 7010
 
 # Note: there should not be more than 1 connections between 2 switches.
 # Switch 1
