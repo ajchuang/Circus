@@ -27,8 +27,11 @@ public class CPSwitch extends CSwitch implements DebugInterface {
         if (cmd.equals ("id")) {
             os.println ("I am PS-CS switch"); 
             os.println ("switch id: " + selfID);
-        } else if (cmd.equals ("dump ctable")) {
-            //os.println (circuit_table.toString ());
+        } else if (cmd.startsWith ("gen traffic ")) {
+            
+            /* TODO */
+            PPacket pp = PPacket.createPacket ("10.0.0.1", "10.0.0.2");
+            
         } else {
             os.println ("unknown command: " + cmd);
         }
