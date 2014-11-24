@@ -24,7 +24,6 @@ public class Circus {
         int sw_counter = 0;
         CircusConfig cfg = CircusConfig.getConfig ();
         
-        
         log ("parsing config file");
         
         try {
@@ -129,7 +128,16 @@ public class Circus {
     }
     
     public void startSystem () {
+        
         log ("starting the system");
+        
+        CircusConfig cfg = CircusConfig.getConfig ();
+        
+        /* start switches one after another */
+        /* assuming that switch id starting from 1 */
+        for (int i = 1; i < cfg.getSwCnt () + 1; ++i) {
+            CSwitch cs = new CSwitch (i);
+        }
     }
     
     public static void main (String args[]) {
