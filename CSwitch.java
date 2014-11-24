@@ -163,6 +163,9 @@ public class CSwitch {
             m_dbgPort = dport;
         }
         
+        void procCmd (String cmd) {
+        }
+        
         public void run () {
             try {
                 
@@ -185,6 +188,7 @@ public class CSwitch {
                             
                         /* parsing commands, and do something here */
                         CSwitch.log (cmd);
+                        procCmd (cmd);
                     }
                     
                     /* clean up */
