@@ -7,7 +7,7 @@ import java.util.*;
 import java.nio.*;
 import java.nio.channels.*;
 
-public class CSwitch implements DebugInterface {
+public class CSwitch implements DebugInterface, DataPlaneHandler {
 	final static String dest = "destID";
     final static String length = "length";
     
@@ -38,7 +38,7 @@ public class CSwitch implements DebugInterface {
         dbg_port    = cc.getSwDport (switchID);
         
         /* starting servers */
-    	new Thread (new UDPListen ()).start();
+    	new Thread (new UDPListen (this)).start();
     	new Thread (new TCPListen ()).start();
         new Thread (new DebugServer (dbg_port, this)).start();
     }
@@ -128,10 +128,31 @@ public class CSwitch implements DebugInterface {
         }
     }
     
+    /* implement DataPlaneHandler */
+    public void handleCsData (CPacket cp) {
+        /* do CS switching procedures */
+        if (updatepkt (cp) == true) {
+            //deliver pkt!!!
+            CPacket.transmit (cp);
+            Circus.log ("Switch " + selfID + " delivered a pkt.");
+        } 
+    }
+    
+    /* implement DataPlaneHandler */
+    public void handlePsData (PPacket pp) {
+        return;
+    }
+    
     public class UDPListen implements Runnable {
+        
+        DataPlaneHandler m_hdlr;
         
         /* note: the packet should be smaller than 2048 bytes */
         final int MAX_PACKET_SIZE = 2048;
+        
+        public UDPListen (DataPlaneHandler hdlr) {
+            m_hdlr = hdlr;
+        }
         
     	public void run () {
                 
@@ -148,13 +169,7 @@ public class CSwitch implements DebugInterface {
                     
                     /* convert PS to CS */
                     CPacket pkt = CPacket.receive (packet);
-                    
-                    /* do CS switching procedures */
-                    if (updatepkt (pkt) == true) {
-                        //deliver pkt!!!
-                        CPacket.transmit (pkt);
-                        Circus.log ("Switch " + selfID + " delivered a pkt.");
-                    } 
+                    m_hdlr.handleCsData (pkt);
                 }
         	} catch (Exception e) {
         		log ("Ooops: " + e);

@@ -3,7 +3,9 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.io.PrintStream;
 
-public class CPSwitch extends CSwitch implements DebugInterface {
+public class CPSwitch extends CSwitch implements DebugInterface, DataPlaneHandler {
+    
+    CPTable m_cpTable;
     
     public static void log (String s) {
         System.out.println ("[CPSwitch] " + s);
@@ -12,13 +14,16 @@ public class CPSwitch extends CSwitch implements DebugInterface {
     public CPSwitch (int switchId) {
         super (switchId);
         
+        /* CS-PS switching table */
+        m_cpTable = new CPTable ();
+        
         log ("CPSwitch id: " + switchId + " is on");
         CircusConfig cc = CircusConfig.getConfig ();
         
         /* starting PS thread */
         int pport = cc.getPsPort (switchId);
         log ("CPSwitch PS_PORT: " + pport);
-        new Thread (new PacketSwitchServer (pport)).start ();
+        new Thread (new PacketSwitchServer (pport, this)).start ();
     }
     
     /* implement DebugInterface */
@@ -68,13 +73,32 @@ public class CPSwitch extends CSwitch implements DebugInterface {
         }
     }
     
+    /* implement DataPlaneHandler */
+    public void handleCsData (CPacket cp) {
+        
+        /* TODO */
+        /* check if we need to transform to PS first */
+        /* check if we need to further pass data to next switch */
+        return;
+    }
+    
+    /* implement DataPlaneHandler */
+    public void handlePsData (PPacket pp) {
+        /* TODO: PS to CS switching */
+        /* look up the table and determine where to go */
+        return;
+    }
+    
+    /* inner class for ps switch */
     public class PacketSwitchServer implements Runnable {
         
         final int MAX_PACKET_SIZE = 2048;
         int m_psPort;
+        DataPlaneHandler m_hdlr;
         
-        public PacketSwitchServer (int port) {
+        public PacketSwitchServer (int port, DataPlaneHandler hdlr) {
             m_psPort = port;
+            m_hdlr = hdlr;
         }
         
         public void run () {
@@ -95,9 +119,7 @@ public class CPSwitch extends CSwitch implements DebugInterface {
                     System.arraycopy (packet.getData (), 0, raw, 0, packet.getLength());
                     
                     PPacket pp = PPacket.unpack (raw);
-                    log ("Rx packet: " + pp.getId ());                         
-                    
-                    /* TODO: PS to CS switching */
+                    m_hdlr.handlePsData (pp);
                 }
         	} catch (Exception e) {
         		log ("Ooops: " + e);
