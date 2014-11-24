@@ -164,7 +164,15 @@ public class CSwitch {
         }
         
         void procCmd (String cmd, PrintStream os) {
-            os.println ("I got " + cmd);
+            CSwitch.log ("dbg command: " + cmd);
+            
+            if (cmd.equals ("id")) {
+                os.println ("switch id: " + selfID);
+            } else if (cmd.equals ("dump ctable")) {
+                //os.println (circuit_table.toString ());
+            } else {
+                os.println ("unknown command: " + cmd);
+            }
         }
         
         public void run () {
