@@ -20,6 +20,7 @@ public class CircusConfig {
     /* Property names */
     final static String m_propAddr = "IP";
     final static String m_propPort = "PORT";
+    final static String m_propDport = "DPORT";
     final static String m_propPortCnt = "PORT_CNT";
     final static String m_propPortNum = "PORT_";
     
@@ -66,7 +67,7 @@ public class CircusConfig {
         return m_swCnt;
     }
     
-    public void addSwList (String sid, String sip, String sport) {//sip==switch IP; sport==switch port
+    public void addSwList (String sid, String sip, String sport, String dport) {
         
         int id = Integer.parseInt (sid);
         Integer iid = Integer.valueOf (id);
@@ -81,6 +82,7 @@ public class CircusConfig {
         m_swList.put (iid, prop);
         prop.setProperty (m_propAddr, sip);
         prop.setProperty (m_propPort, sport);
+        prop.setProperty (m_propDport, dport);
         
         Circus.log ("Switch " + sid + " added ( " + sip + ":" + sport + " )");
     }
@@ -109,6 +111,18 @@ public class CircusConfig {
         
         Properties p = m_swList.get (iid);
         return Integer.parseInt (p.getProperty (m_propPort));
+    }
+    
+    public int getSwDport (int id) {
+        Integer iid = Integer.valueOf (id);
+        
+        if (m_swList.containsKey (iid) == false) {
+            Circus.log ("Use an invalid key: " + id);
+            return -1;
+        } 
+        
+        Properties p = m_swList.get (iid);
+        return Integer.parseInt (p.getProperty (m_propDport));
     }
     
     /* add switch port count config */

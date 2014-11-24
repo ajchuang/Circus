@@ -10,28 +10,39 @@ import java.nio.channels.*;
 public class CSwitch {
 	final static String dest = "destID";
     final static String length = "length";
-    static int selfID;
-    static int selfIP;
-    static int selfudpport;
-    static InetAddress controladd;
-    static int controlport;
+    
+    int selfID;
+    int selfIP;
+    int selfudpport;
+    int dbg_port;
+    InetAddress controladd;
+    int controlport;
     
     HashMap<Integer, HashMap<Integer, HashMap<Integer, Properties>>> circuit_table;
     //(srcID, (length_in, (TDID, Properties(destID, length_out))))
     
-    public CSwitch (int switchID) { //, int dataport, int controlport) {
-    	CircusConfig cc = CircusConfig.getConfig ();
-    	selfID = switchID;
-    	controladd = cc.getCntlAddr();
-    	controlport = cc.getCntlPort();
-    	selfudpport = cc.getSwPort(switchID);
-        Circus.log ("Switch " + selfID + "is up!" );
-    	new Thread (new UDPListen ()).start();
-    	new Thread (new TCPListen ()).start();
-        
+    static void log (String s) {
+        System.out.println ("[CSwitch] " + s);
     }
     
-    public boolean insertcircuit(int srcID, int inlength, int TDID, int destID, int outlength){
+    public CSwitch (int switchID) {
+        
+        Circus.log ("Switch " + switchID + "is up!" );
+        
+    	CircusConfig cc = CircusConfig.getConfig ();
+    	selfID      = switchID;
+    	controladd  = cc.getCntlAddr ();
+    	controlport = cc.getCntlPort ();
+    	selfudpport = cc.getSwPort (switchID);
+        dbg_port    = cc.getSwDport (switchID);
+        
+        /* starting servers */
+    	new Thread (new UDPListen ()).start();
+    	new Thread (new TCPListen ()).start();
+        new Thread (new DebugServer (dbg_port)).start();
+    }
+    
+    public boolean insertcircuit (int srcID, int inlength, int TDID, int destID, int outlength) {
         Circus.log ("Switch " + selfID + "inserting circuit" );
         
         HashMap<Integer, HashMap<Integer, Properties>> src_table = circuit_table.get(srcID);
@@ -118,12 +129,12 @@ public class CSwitch {
     	}
     }
     
-    
-    public class TCPListen implements Runnable{
-    	public void run(){
+    public class TCPListen implements Runnable {
+    	public void run () {
         	try{
-                Socket TCPsocket = new Socket(controladd, controlport);     // initiate a socket to connect to the server
-                BufferedReader br = new BufferedReader(new InputStreamReader(TCPsocket.getInputStream()));
+                Socket TCPsocket = new Socket (controladd, controlport);     // initiate a socket to connect to the server
+                BufferedReader br = new BufferedReader (new InputStreamReader (TCPsocket.getInputStream ()));
+                
                 while(true){
                     String command=br.readLine();
                     if(!command.equals(null)){
@@ -134,6 +145,51 @@ public class CSwitch {
         		
         	}
     	}
+    }
+    
+    public class DebugServer implements Runnable {
+        
+        int m_dbgPort;
+        
+        public DebugServer (int dport) {
+            m_dbgPort = dport;
+        }
+        
+        public void run () {
+            try {
+                
+                CSwitch.log ("Debug Server @ SW " + m_dbgPort + " is on");
+                
+                /* create the debug server */
+                ServerSocket ss = new ServerSocket (m_dbgPort);
+                
+                while (true) {
+                    Socket sc = ss.accept ();
+                    InputStream is = sc.getInputStream ();
+                    BufferedReader br = new BufferedReader (new InputStreamReader (is));
+                    String cmd;
+                    
+                    while ((cmd = br.readLine ()) != null) {
+                        
+                        cmd.toLowerCase ();
+                        if (cmd.equals ("cmd quit"))
+                            break;
+                            
+                        /* parsing commands, and do something here */
+                        CSwitch.log (cmd);
+                    }
+                    
+                    /* clean up */
+                    br.close ();
+                    is.close ();
+                    sc.close ();
+            	}
+                
+        	} catch (Exception e) {
+                
+        		CSwitch.log ("Ooops: " + e);
+        	}
+        }
     }
 }
 

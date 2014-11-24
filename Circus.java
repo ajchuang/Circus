@@ -73,8 +73,8 @@ public class Circus {
                 /* read switch map */
                 String toks[] = line.split ("\\s+");
                 
-                if (toks.length == 3)
-                    cfg.addSwList (toks[0], toks[1], toks[2]);
+                if (toks.length == 4)
+                    cfg.addSwList (toks[0], toks[1], toks[2], toks[3]);
                 else {
                     log ("config file format error");
                     System.exit (0);

@@ -2,7 +2,7 @@
 127.0.0.1 8888  1
 
 # switch map
-1 127.0.0.1 7000 
+1 127.0.0.1 7000 7001 
 
 # Note: there should not be more than 1 connections between 2 switches.
 # Switch 1
