@@ -1,13 +1,27 @@
 import java.util.ArrayList;
 import java.util.Properties;
 import java.net.InetAddress;
+import java.util.concurrent.CopyOnWriteArrayList;
 
+/* TODO: not finished */
 public class CPTable {
     
-    ArrayList<CPTblEntry> m_table;
+    /* a concurrent safe data structure */
+    CopyOnWriteArrayList<CPTblEntry> m_table;
     
     public CPTable () {
-        m_table = new ArrayList<CPTblEntry> ();
+        m_table = new CopyOnWriteArrayList<CPTblEntry> ();
+    }
+    
+    public Properties matchPS (PPacket pp) {
+        
+        
+        
+        return null;
+    }
+    
+    public Properties matchCS (CPacket cp) {
+        return null;
     }
     
     /* inner class for table entry */
