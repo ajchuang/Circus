@@ -131,7 +131,7 @@ public class CSwitch implements DebugInterface {
     public class UDPListen implements Runnable {
         
         /* note: the packet should be smaller than 2048 bytes */
-        final int MAX_PACKET_SIZE = 2^12;
+        final int MAX_PACKET_SIZE = 2048;
         
     	public void run () {
                 
