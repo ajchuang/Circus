@@ -121,6 +121,7 @@ public class Circus {
             
         } catch (Exception e) {
             log ("Ooops: " + e);
+            e.printStackTrace ();
             System.exit (0);
         }
         

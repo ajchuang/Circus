@@ -11,6 +11,7 @@ public class CSwitch {
 	final static String dest = "destID";
     final static String length = "length";
     
+    /* data structure for each switch */
     int selfID;
     int selfIP;
     int selfudpport;
@@ -114,25 +115,37 @@ public class CSwitch {
         return true;
     }
     
-    public class UDPListen implements Runnable{
-    	public void run(){
-            final int SIZE = 8192;                    //
-            byte buffer[] = new byte[SIZE];            //
-        	try{
-                DatagramSocket socket = new DatagramSocket(selfudpport);         //
-                while(true){
-                    DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
-                    socket.receive(packet);                                    //
-                    CPacket pkt = CPacket.receive(packet);
-                    if (updatepkt(pkt) ==  true){
+    public class UDPListen implements Runnable {
+        
+        /* note: the packet should be smaller than 2048 bytes */
+        final int MAX_PACKET_SIZE = 2^12;
+        
+    	public void run () {
+                
+            byte buffer[] = new byte[MAX_PACKET_SIZE];
+            
+        	try {
+                /* create data plane listener */
+                DatagramSocket socket = new DatagramSocket (selfudpport);
+                
+                while (true) {
+                    /* do packet-switching receiving */
+                    DatagramPacket packet = new DatagramPacket (buffer, buffer.length);
+                    socket.receive (packet);                                   
+                    
+                    /* convert PS to CS */
+                    CPacket pkt = CPacket.receive (packet);
+                    
+                    /* do CS switching procedures */
+                    if (updatepkt (pkt) == true) {
                         //deliver pkt!!!
-                        CPacket.transmit(pkt);
+                        CPacket.transmit (pkt);
                         Circus.log ("Switch " + selfID + " delivered a pkt.");
-                    };
-                    //call
+                    } 
                 }
-        	}catch(Exception e){
-        		
+        	} catch (Exception e) {
+        		log ("Ooops: " + e);
+                e.printStackTrace ();
         	}
     	}
     }
@@ -143,14 +156,16 @@ public class CSwitch {
                 Socket TCPsocket = new Socket (controladd, controlport);     // initiate a socket to connect to the server
                 BufferedReader br = new BufferedReader (new InputStreamReader (TCPsocket.getInputStream ()));
                 
-                while(true){
-                    String command=br.readLine();
-                    if(!command.equals(null)){
+                while (true) {
+                    String command = br.readLine ();
+                    
+                    if (!command.equals (null)) {
                         //parse the TCP command
-                	}
+                    }
             	}
-        	}catch(Exception e){
-        		
+        	} catch (Exception e) {
+        		CSwitch.log ("Ooops: " + e);
+                e.printStackTrace ();
         	}
     	}
     }
@@ -219,8 +234,8 @@ public class CSwitch {
             	}
                 
         	} catch (Exception e) {
-                
         		CSwitch.log ("Ooops: " + e);
+                e.printStackTrace ();
         	}
         }
     }
