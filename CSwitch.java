@@ -19,7 +19,7 @@ public class CSwitch implements DebugInterface {
     InetAddress controladd;
     int controlport;
     
-    HashMap<Integer, HashMap<Integer, HashMap<Integer, Properties>>> circuit_table;// keep all circuit information within this switch
+    HashMap<Integer, HashMap<Integer, HashMap<Integer, Properties>>> circuit_table;// keep all circuit information of this switch
     //(srcID, (length_in, (TDID, Properties(destID, length_out))))
     
     static void log (String s) {
@@ -71,7 +71,7 @@ public class CSwitch implements DebugInterface {
         	if (destinfo.get(dest).equals(temp) && destinfo.get(length).equals(temp1)){
         		return true;//entry already exist
         	}
-            Circus.log ("Switch " + selfID + " Error: multiple destination while inserting circuit from" +srcID +" to "+destID );
+            Circus.log ("Switch " + selfID + " Error: multiple destination detected while inserting circuit from" +srcID +" to "+destID );
             return false;//entry conflict
             
         }
