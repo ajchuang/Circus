@@ -66,7 +66,8 @@ public class PPacket {
         
         if (len > sm_headerLen)
             System.arraycopy (rd, 0, raw, 24, rd.length);
-            
+        
+        log ("pack len: " + raw.length);
         return raw;
     }
     
@@ -75,20 +76,21 @@ public class PPacket {
         
         ByteBuffer wrapped;
         byte[] temp = new byte[4];
+        log ("LEN: " + raw.length);
         
         System.arraycopy (raw, 0, temp, 0, 4);
         wrapped = ByteBuffer.wrap (temp);
         int v = wrapped.getInt ();
         
-        System.arraycopy (raw, 0, temp, 4, 4);
+        System.arraycopy (raw, 4, temp, 0, 4);
         wrapped = ByteBuffer.wrap (temp);
         int i = wrapped.getInt ();
         
-        System.arraycopy (raw, 0, temp, 8, 4);
+        System.arraycopy (raw, 8, temp, 0, 4);
         wrapped = ByteBuffer.wrap (temp);
         int p = wrapped.getInt ();
         
-        System.arraycopy (raw, 0, temp, 12, 4);
+        System.arraycopy (raw, 12, temp, 0, 4);
         InetAddress s = null;
         try {
             s = InetAddress.getByAddress (temp);
@@ -98,7 +100,7 @@ public class PPacket {
             System.exit (0);
         }
         
-        System.arraycopy (raw, 0, temp, 16, 4);
+        System.arraycopy (raw, 16, temp, 0, 4);
         InetAddress d = null;
         try {
             d = InetAddress.getByAddress (temp); 
@@ -108,7 +110,7 @@ public class PPacket {
             System.exit (0);
         }
         
-        System.arraycopy (raw, 0, temp, 20, 4);
+        System.arraycopy (raw, 20, temp, 0, 4);
         wrapped = ByteBuffer.wrap (temp);
         int l = wrapped.getInt ();
         
@@ -116,7 +118,7 @@ public class PPacket {
         
         if (l > sm_headerLen) {
             data = new byte[l - sm_headerLen];
-            System.arraycopy (data, 0, temp, 24, (l-24));
+            System.arraycopy (data, 24, temp, 0, (l-24));
         }
         
         PPacket pp = new PPacket ();

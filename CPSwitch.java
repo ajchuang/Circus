@@ -1,3 +1,4 @@
+import java.net.InetAddress;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.io.PrintStream;
@@ -27,10 +28,40 @@ public class CPSwitch extends CSwitch implements DebugInterface {
         if (cmd.equals ("id")) {
             os.println ("I am PS-CS switch"); 
             os.println ("switch id: " + selfID);
-        } else if (cmd.startsWith ("gen traffic ")) {
+        } else if (cmd.startsWith ("gen_traffic")) {
             
-            /* TODO */
-            PPacket pp = PPacket.createPacket ("10.0.0.1", "10.0.0.2");
+            String[] toks = cmd.split ("\\s+");
+            
+            if (toks.length != 3) {
+                os.println ("incorrect format");
+                return;
+            }
+                
+            PPacket pp = PPacket.createPacket (toks[1], toks[2]);
+            byte[] raw = PPacket.pack (pp);
+            
+            /* send to the packet switch server */
+            try {
+                CircusConfig cfg = CircusConfig.getConfig ();
+        
+                /* lookup PS info */
+                String ip = cfg.getSwAddr (selfID);
+                int port = cfg.getPsPort (selfID);
+                
+                InetAddress adr = InetAddress.getByName (ip);
+                
+                DatagramPacket packet = new DatagramPacket (raw, raw.length, adr, port);
+                DatagramSocket socket = new DatagramSocket ();
+                
+                log ("tx length: " + packet.getData().length);
+                
+                socket.send (packet);                         
+                socket.close();
+                
+            } catch (Exception e) {
+                log ("Ooops: " + e);
+            }
+            
             
         } else {
             os.println ("unknown command: " + cmd);
@@ -39,7 +70,7 @@ public class CPSwitch extends CSwitch implements DebugInterface {
     
     public class PacketSwitchServer implements Runnable {
         
-        final int MAX_PACKET_SIZE = 2^12;
+        final int MAX_PACKET_SIZE = 2048;
         int m_psPort;
         
         public PacketSwitchServer (int port) {
@@ -57,7 +88,14 @@ public class CPSwitch extends CSwitch implements DebugInterface {
                 while (true) {
                     /* do packet-switching receiving */
                     DatagramPacket packet = new DatagramPacket (buffer, buffer.length);
-                    socket.receive (packet);                                   
+                    socket.receive (packet);
+                    
+                    /* unpack the received PS packet */
+                    byte[] raw = new byte[packet.getLength ()];
+                    System.arraycopy (packet.getData (), 0, raw, 0, packet.getLength());
+                    
+                    PPacket pp = PPacket.unpack (raw);
+                    log ("Rx packet: " + pp.getId ());                         
                     
                     /* TODO: PS to CS switching */
                 }
