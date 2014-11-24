@@ -163,36 +163,49 @@ public class CSwitch {
             m_dbgPort = dport;
         }
         
-        void procCmd (String cmd) {
+        void procCmd (String cmd, PrintStream os) {
+            os.println ("I got " + cmd);
         }
         
         public void run () {
+            
+            CSwitch.log ("Debug Server @ SW " + m_dbgPort + " is on");
+            
             try {
-                
-                CSwitch.log ("Debug Server @ SW " + m_dbgPort + " is on");
-                
                 /* create the debug server */
                 ServerSocket ss = new ServerSocket (m_dbgPort);
                 
                 while (true) {
+                    
+                    /* waiting for client */
                     Socket sc = ss.accept ();
+                    
+                    /* lots of cliches */
                     InputStream is = sc.getInputStream ();
+                    OutputStream os = sc.getOutputStream ();
                     BufferedReader br = new BufferedReader (new InputStreamReader (is));
+                    PrintStream out = new PrintStream (os);
+                    
+                    /* the string ref for command input */
                     String cmd;
                     
                     while ((cmd = br.readLine ()) != null) {
                         
                         cmd.toLowerCase ();
+                        
+                        /* check if leaving debug */
                         if (cmd.equals ("cmd quit"))
                             break;
                             
                         /* parsing commands, and do something here */
                         CSwitch.log (cmd);
-                        procCmd (cmd);
+                        procCmd (cmd, out);
                     }
                     
                     /* clean up */
+                    out.close ();
                     br.close ();
+                    os.close ();
                     is.close ();
                     sc.close ();
             	}
