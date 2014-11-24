@@ -18,7 +18,7 @@ public class CSwitch {
     InetAddress controladd;
     int controlport;
     
-    HashMap<Integer, HashMap<Integer, HashMap<Integer, Properties>>> circuit_table;
+    HashMap<Integer, HashMap<Integer, HashMap<Integer, Properties>>> circuit_table;// keep all circuit information within this switch
     //(srcID, (length_in, (TDID, Properties(destID, length_out))))
     
     static void log (String s) {
@@ -42,9 +42,8 @@ public class CSwitch {
         new Thread (new DebugServer (dbg_port)).start();
     }
     
-    public boolean insertcircuit (int srcID, int inlength, int TDID, int destID, int outlength) {
-        Circus.log ("Switch " + selfID + "inserting circuit" );
-        
+    public boolean insertcircuit(int srcID, int inlength, int TDID, int destID, int outlength){
+        Circus.log ("Switch " + selfID + " inserting circuit from" +srcID +" to "+destID);
         HashMap<Integer, HashMap<Integer, Properties>> src_table = circuit_table.get(srcID);
         if (src_table == null) {
         	src_table = new HashMap<Integer, HashMap<Integer, Properties>>();
@@ -62,7 +61,7 @@ public class CSwitch {
         	destinfo.setProperty(dest, temp);
         	temp = ""+outlength;
         	destinfo.setProperty(length, temp);
-        	wlength_table.put(TDID, destinfo);
+        	wlength_table.put(TDID, destinfo);//add entry
     		return true;
         }
         else {
@@ -71,19 +70,26 @@ public class CSwitch {
         	if (destinfo.get(dest).equals(temp) && destinfo.get(length).equals(temp1)){
         		return true;//entry already exist
         	}
+            Circus.log ("Switch " + selfID + " Error: multiple destination while inserting circuit from" +srcID +" to "+destID );
             return false;//entry conflict
+            
         }
     }
     
     public boolean removecircuit(int srcID, int inlength, int TDID){
-        Circus.log ("Switch " + selfID + "removing circuit" );
         HashMap<Integer, HashMap<Integer, Properties>> src_table = circuit_table.get(srcID);
         HashMap<Integer, Properties> wlength_table = src_table.get(inlength);
         Properties destinfo = wlength_table.get(TDID);
         if (destinfo ==  null){
+            Circus.log ("Switch " + selfID + " removes circuit: src" +srcID +" length: "+inlength+" circuit not exsit! ");
     		return false;
         }
-        else return true;
+        
+        else{
+            Circus.log ("Switch " + selfID + " removes circuit: src" +srcID +" length: "+inlength+" succeed! ");
+        	wlength_table.remove(TDID);//remove circuit info
+        	return true;
+        }
     }
     
     public boolean updatepkt(CPacket pkt){
@@ -104,7 +110,7 @@ public class CSwitch {
         pkt.setFromSw(selfID);
         pkt.setToSw(Integer.parseInt(destinfo.getProperty(dest)));
         pkt.setLambda(Integer.parseInt(destinfo.getProperty("length")));
-        Circus.log ("Switch " + selfID + "forwarding pkt to"+ dest);
+        Circus.log ("Switch " + selfID + " forwarding pkt to "+ dest);
         return true;
     }
     
@@ -120,6 +126,8 @@ public class CSwitch {
                     CPacket pkt = CPacket.receive(packet);
                     if (updatepkt(pkt) ==  true){
                         //deliver pkt!!!
+                        CPacket.transmit(pkt);
+                        Circus.log ("Switch " + selfID + " delivered a pkt.");
                     };
                     //call
                 }
