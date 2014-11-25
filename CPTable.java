@@ -37,7 +37,7 @@ public class CPTable {
         		}
         	}
         }
-    	
+        Circus.log ("CPTable Error: Entry not found while matching PP!" );
         return null;
     }
     
@@ -62,6 +62,7 @@ public class CPTable {
         		}
         	}
         }
+        Circus.log ("CPTable Error: Entry not found while matching CP!" );
         return null;
     }
     
@@ -69,6 +70,7 @@ public class CPTable {
     	boolean SrcisP = (Srcinfo.getProperty("swFrom") == null);// src is PPacket
     	CPTblEntry entry = new CPTblEntry(Srcinfo, Dstinfo, SrcisP);
     	m_table.add(entry);
+        Circus.log ("CPTable info: Entry inserted" );
     	return true;
     }
     
@@ -78,9 +80,11 @@ public class CPTable {
     		CPTblEntry entry = Iterator.next();
     		if(entry.Srcinfo.equals(Srcinfo)){
     			Iterator.remove();
+    	        Circus.log ("CPTable info: Entry removed" );
     			return true;
     		}
     	}
+        Circus.log ("CPTable Error: Entry not found while removing" );
     	return false;
     }
     
