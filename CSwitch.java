@@ -29,7 +29,7 @@ public class CSwitch implements DebugInterface, DataPlaneHandler {
     
     public CSwitch (int switchID) {
         
-        Circus.log ("Switch " + switchID + "is up!" );
+        Circus.log ("Switch " + switchID + " is up!" );
         
     	CircusConfig cc = CircusConfig.getConfig ();
     	selfID      = switchID;
