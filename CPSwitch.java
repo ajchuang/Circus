@@ -23,6 +23,8 @@ public class CPSwitch extends CSwitch implements DebugInterface, DataPlaneHandle
         /* starting PS thread */
         int pport = cc.getPsPort (switchId);
         log ("CPSwitch PS_PORT: " + pport);
+        
+        /* starting the PS server */
         new Thread (new PacketSwitchServer (pport, this)).start ();
     }
     
