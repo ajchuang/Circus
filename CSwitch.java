@@ -1,6 +1,7 @@
 import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.Properties;
+
 import java.io.*;
 import java.net.*;
 import java.util.*;
@@ -38,8 +39,8 @@ public class CSwitch implements DebugInterface, DataPlaneHandler {
         dbg_port    = cc.getSwDport (switchID);
         
         /* starting servers */
-    	new Thread (new UDPListen (this)).start();
-    	new Thread (new TCPListen ()).start();
+    	new Thread (new DataPlaneServer (this)).start();
+    	new Thread (new CntlPlaneServer ()).start();
         new Thread (new DebugServer (dbg_port, this)).start();
     }
     
@@ -143,14 +144,14 @@ public class CSwitch implements DebugInterface, DataPlaneHandler {
         return;
     }
     
-    public class UDPListen implements Runnable {
+    public class DataPlaneServer implements Runnable {
         
         DataPlaneHandler m_hdlr;
         
         /* note: the packet should be smaller than 2048 bytes */
         final int MAX_PACKET_SIZE = 2048;
         
-        public UDPListen (DataPlaneHandler hdlr) {
+        public DataPlaneServer (DataPlaneHandler hdlr) {
             m_hdlr = hdlr;
         }
         
@@ -178,18 +179,27 @@ public class CSwitch implements DebugInterface, DataPlaneHandler {
     	}
     }
     
-    public class TCPListen implements Runnable {
+    public class CntlPlaneServer implements Runnable {
     	public void run () {
-        	try{
-                Socket TCPsocket = new Socket (controladd, controlport);     // initiate a socket to connect to the server
-                BufferedReader br = new BufferedReader (new InputStreamReader (TCPsocket.getInputStream ()));
+            
+        	try {
+                /* initiate a socket to connect to the server */
+                Socket TCPsocket = new Socket (controladd, controlport);
+                
+                /* using object stream to retrieve the commobj */
+                ObjectInputStream ois = new ObjectInputStream (TCPsocket.getInputStream ());
                 
                 while (true) {
-                    String command = br.readLine ();
+                    Object obj = ois.readObject ();
                     
-                    if (!command.equals (null)) {
-                        //parse the TCP command
+                    if (!(obj instanceof CircusCommObj)) {
+                        log ("bad type");
+                        continue;
                     }
+                        
+                    CircusCommObj cco = (CircusCommObj) obj; 
+                    
+                    /* process the cco */
             	}
         	} catch (Exception e) {
         		CSwitch.log ("Ooops: " + e);

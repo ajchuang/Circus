@@ -3,5 +3,5 @@ echo cleaning
 rm *.class
 
 echo compiling
-javac *.java
+javac -cp 'CircusComm.jar' *.java
 
