@@ -4,10 +4,12 @@ public class CircusCommObj {
     /* Public Interface */
     /**************************************************************************/
     /* MSG TYPE Constants */
-    public final static int mtype_poweron   = 0;
-    public final static int mtype_setup     = 1;
-    public final static int mtype_teardown  = 2;
-    public final static int mtype_reconfig  = 3;
+    public final static int mtype_sysup     = 0;
+    public final static int mtype_sysdown   = 1;
+    public final static int mtype_setup_cs  = 2;
+    public final static int mtype_setup_ps  = 3;
+    public final static int mtype_teardown  = 4;
+    public final static int mtype_reconfig  = 5;
     
     public final static int mtype_ack       = 0x88;
     public final static int mtype_nack      = 0xff;
@@ -32,6 +34,7 @@ public class CircusCommObj {
     final static String mkey_dstip  = "DST_IP";
     
     int m_msgId;
+    int m_sender;
     int m_msgType;
     Properties m_param;
     
@@ -41,6 +44,10 @@ public class CircusCommObj {
     }
     
     /* setters */
+    public void setSender (int id) {
+        m_sender = id;
+    }
+    
     /* setMsgId should only be called for ack/nack */
     public void setMsgId (int id) {
         m_msgId = id;
@@ -74,7 +81,15 @@ public class CircusCommObj {
         setParam (mkey_dstip, ip);
     }
     
+    public void setSwType (int type) {
+        setParam (mkey_swType, Integer.toString (type));
+    }
+    
     /* getters */
+    public int setSender () {
+        return m_sender;
+    }
+    
     public int getMsgId () {
         return m_msgId;
     }
@@ -109,6 +124,11 @@ public class CircusCommObj {
     
     public String getDstIp () {
         return getParam (mkey_dstip);
+    }
+    
+    public int getSwType () {
+        String s = getParam (mkey_swType);
+        return Integer.parseInt (s);
     }
     
     /* generic method for getting/setting params */
