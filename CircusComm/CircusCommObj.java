@@ -9,6 +9,9 @@ public class CircusCommObj {
     public final static int mtype_teardown  = 2;
     public final static int mtype_reconfig  = 3;
     
+    public final static int mtype_ack       = 0x88;
+    public final static int mtype_nack      = 0xff;
+    
     /* switch type */
     public final static int msw_csSwitch    = 0xf0;
     public final static int msw_pcSwitch    = 0x0f;
