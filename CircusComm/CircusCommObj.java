@@ -31,14 +31,21 @@ public class CircusCommObj {
     final static String mkey_srcip  = "SRC_IP";
     final static String mkey_dstip  = "DST_IP";
     
+    int m_msgId;
     int m_msgType;
     Properties m_param;
     
     public CircusCommObj () {
+        m_msgId = (int)(Math.random () * 65535);
         m_param = new Properties ();
     }
     
     /* setters */
+    /* setMsgId should only be called for ack/nack */
+    public void setMsgId (int id) {
+        m_msgId = id;
+    }
+    
     public void setMsgType (int type) {
         m_msgType = type;
     }
@@ -68,6 +75,10 @@ public class CircusCommObj {
     }
     
     /* getters */
+    public int getMsgId () {
+        return m_msgId;
+    }
+    
     public int getMsgType () {
         return m_msgType;
     }
