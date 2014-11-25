@@ -29,7 +29,7 @@ public class CSwitch implements DebugInterface, DataPlaneHandler {
     
     public CSwitch (int switchID) {
         
-        Circus.log ("Switch " + switchID + " is up!" );
+        log ("Switch " + switchID + " is up!" );
         
     	CircusConfig cc = CircusConfig.getConfig ();
     	selfID      = switchID;
@@ -45,7 +45,8 @@ public class CSwitch implements DebugInterface, DataPlaneHandler {
     }
     
     public boolean insertcircuit(int srcID, int inlength, int TDID, int destID, int outlength){
-        Circus.log ("Switch " + selfID + " inserting circuit from" +srcID +" to "+destID);
+        log ("Switch " + selfID + " inserting circuit from" +srcID +" to "+destID);
+        
         HashMap<Integer, HashMap<Integer, Properties>> src_table = circuit_table.get(srcID);
         if (src_table == null) {
         	src_table = new HashMap<Integer, HashMap<Integer, Properties>>();
@@ -83,12 +84,12 @@ public class CSwitch implements DebugInterface, DataPlaneHandler {
         HashMap<Integer, Properties> wlength_table = src_table.get(inlength);
         Properties destinfo = wlength_table.get(TDID);
         if (destinfo ==  null){
-            Circus.log ("Switch " + selfID + " removes circuit: src" +srcID +" length: "+inlength+" circuit not exsit! ");
+            log ("Switch " + selfID + " removes circuit: src" +srcID +" length: "+inlength+" circuit not exsit! ");
     		return false;
         }
         
         else{
-            Circus.log ("Switch " + selfID + " removes circuit: src" +srcID +" length: "+inlength+" succeed! ");
+            log ("Switch " + selfID + " removes circuit: src" +srcID +" length: "+inlength+" succeed! ");
         	wlength_table.remove(TDID);//remove circuit info
         	return true;
         }
