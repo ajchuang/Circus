@@ -4,13 +4,15 @@ Controller needs to maintain a table containing all current flows in the network
 
 Once Controller received a request to set up a circuit:
 1) Based on existing flows and network topology, generate a possible circuit.
-2) Send Configuration messages(TCP) to all switches:
+
+2) Send Configuration messages(TCP) to all switches to setup flows:
+
 	For CSwtich:  UP_srcID_srcLambda_destID_destLambda_Timeslot 
 		Reply: 1/0 (succeed or fail)
 	For CPSwitch:	UP_srchostID_desthostID_destID_destLambda_Timeslot
 		Reply: 1/0 (succeed or fail)
 
-3) To remove flow from switches:
+3) Remove a flow from switches:
 	For CSwtich:  DOWN_srcID_srcLambda_destID_destLambda_Timeslot 
 		Reply: 1/0 (succeed or fail)
 	For CPSwitch:	DOWN_srchostID_desthostID_destID_destLambda_Timeslot
