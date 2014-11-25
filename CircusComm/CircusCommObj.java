@@ -1,7 +1,8 @@
 import java.util.Properties;
 
 public class CircusCommObj {
-    
+    /* Public Interface */
+    /**************************************************************************/
     /* MSG TYPE Constants */
     public final static int mtype_poweron   = 0;
     public final static int mtype_setup     = 1;
@@ -12,6 +13,8 @@ public class CircusCommObj {
     public final static int msw_csSwitch    = 0xf0;
     public final static int msw_pcSwitch    = 0x0f;
     
+    /* Local Interface */
+    /**************************************************************************/
     /* PARAM key Constants */
     final static String mkey_swId   = "SWID";
     final static String mkey_swType = "SW_TYPE";
@@ -53,6 +56,14 @@ public class CircusCommObj {
         setParam (mkey_dstsw, Integer.toString (id));
     }
     
+    public void setSrcIp (String ip) {
+        setParam (mkey_srcip, ip);
+    }
+    
+    public void setDstIp (String ip) {
+        setParam (mkey_dstip, ip);
+    }
+    
     /* getters */
     public int getMsgType () {
         return m_msgType;
@@ -76,6 +87,14 @@ public class CircusCommObj {
     public int getDstSw () {
         String s = getParam (mkey_dstsw);
         return Integer.parseInt (s);
+    }
+    
+    public String getSrcIp () {
+        return getParam (mkey_srcip);
+    }
+    
+    public String getDstIp () {
+        return getParam (mkey_dstip);
     }
     
     /* generic method for getting/setting params */
