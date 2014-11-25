@@ -10,6 +10,8 @@ public class CircusCommObj {
     public final static int mtype_setup_ps  = 3;
     public final static int mtype_teardown  = 4;
     public final static int mtype_reconfig  = 5;
+    public final static int mtype_modify_ps = 6;
+    public final static int mtype_remove_ps = 7;
     
     public final static int mtype_ack       = 0x88;
     public final static int mtype_nack      = 0xff;

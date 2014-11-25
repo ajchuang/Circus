@@ -89,22 +89,48 @@ public class CircusComm {
     }
     
     /* PS functions */
-    public static void txAddEntry_ps (int swId, int swType, ObjectOutputStream oos) {
+    /* this entry: PS - CS entry */
+    public static boolean txAddEntry_ps (
+        String srcIp, String dstIp, int lambda, int tdm_id, ObjectOutputStream oos) {
+            
+        CircusCommObj cco = new CircusCommObj ();
+        cco.setMsgType (CircusCommObj.mtype_setup_ps);
+        
+        /* setup CS part */
+        cco.setLambda (lambda);
+        cco.setTdmId (tdm_id);
+        
+        /* setup PS part */
+        cco.setSrcIp (srcIp);
+        cco.setDstIp (dstIp);
+        
+        return send (cco, oos);
     }
     
-    public static void txModifyEntry_ps (int swId, int swType, ObjectOutputStream oos) {
+    public static boolean txModifyEntry_ps (
+        String srcIp, String dstIp, int lambda, int tdm_id, ObjectOutputStream oos) {
+            
+        CircusCommObj cco = new CircusCommObj ();
+        cco.setMsgType (CircusCommObj.mtype_modify_ps);
+        
+        /* setup CS part */
+        cco.setLambda (lambda);
+        cco.setTdmId (tdm_id);
+        
+        /* setup PS part */
+        cco.setSrcIp (srcIp);
+        cco.setDstIp (dstIp);
+        
+        return send (cco, oos);
     }
     
-    public static void txRmEntry_ps (int swId, int swType, ObjectOutputStream oos) {
-    }
-    
-    
-    public static void transmit (CircusCommObj cco, ObjectOutputStream oos) {
-        try {
-            oos.writeObject (cco);
-        } catch (Exception e) {
-            log ("Ooops: " + e);
-            e.printStackTrace ();
-        }
+    public static boolean txRmEntry_ps (String srcIp, String dstIp, ObjectOutputStream oos) {
+        
+        CircusCommObj cco = new CircusCommObj ();
+        cco.setMsgType (CircusCommObj.mtype_remove_ps);
+        cco.setSrcIp (srcIp);
+        cco.setDstIp (dstIp);
+        
+        return send (cco, oos);
     }
 }
