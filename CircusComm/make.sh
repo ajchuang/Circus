@@ -8,4 +8,4 @@ javac *.java
 
 echo archiving
 jar -cvf CircusComm.jar ./*.class
-mv CircusComm.jar ../
+mv CircusComm.jar ../lib/

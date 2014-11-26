@@ -11,6 +11,7 @@ public class CircusComm {
     static boolean send (CircusCommObj cco, ObjectOutputStream oos) {
         try {
             oos.writeObject (cco);
+            oos.flush ();
         } catch (Exception e) {
             log ("Ooops: " + e);
             e.printStackTrace ();
@@ -24,7 +25,7 @@ public class CircusComm {
     public static boolean txSysUp (int swId, int swType, ObjectOutputStream oos) {
         
         CircusCommObj cco = new CircusCommObj ();
-        cco.setMsgType (CircusCommObj.mtype_sysup);
+        cco.setMsgType (CircusCommConst.mtype_sysup);
         cco.setSender (swId);
         cco.setSwType (swType);
         return send (cco, oos);
@@ -33,7 +34,7 @@ public class CircusComm {
     public static boolean txSysDown (int swId, ObjectOutputStream oos) {
         
         CircusCommObj cco = new CircusCommObj ();
-        cco.setMsgType (CircusCommObj.mtype_sysdown);
+        cco.setMsgType (CircusCommConst.mtype_sysdown);
         cco.setSender (swId);
         return send (cco, oos);
     }
@@ -41,7 +42,7 @@ public class CircusComm {
     public static boolean txAck (int swId, int msgId, ObjectOutputStream oos) {
         
         CircusCommObj cco = new CircusCommObj ();
-        cco.setMsgType (CircusCommObj.mtype_ack);
+        cco.setMsgType (CircusCommConst.mtype_ack);
         cco.setSender (swId);
         cco.setMsgId (msgId);
         return send (cco, oos);
@@ -50,7 +51,7 @@ public class CircusComm {
     public static boolean txNack (int swId, int msgId, ObjectOutputStream oos) {
         
         CircusCommObj cco = new CircusCommObj ();
-        cco.setMsgType (CircusCommObj.mtype_nack);
+        cco.setMsgType (CircusCommConst.mtype_nack);
         cco.setSender (swId);
         cco.setMsgId (msgId);
         return send (cco, oos);
@@ -60,7 +61,7 @@ public class CircusComm {
     public static boolean txSetup_cs (int dstSw, int lambda, int tdm_id, ObjectOutputStream oos) {
         
         CircusCommObj cco = new CircusCommObj ();
-        cco.setMsgType (CircusCommObj.mtype_setup_cs);
+        cco.setMsgType (CircusCommConst.mtype_setup_cs);
         cco.setDstSw (dstSw);
         cco.setLambda (lambda);
         cco.setTdmId (tdm_id);
@@ -71,7 +72,7 @@ public class CircusComm {
     public static boolean txReconfig_cs (int dstSw, int lambda, int tdm_id, ObjectOutputStream oos) {
         
         CircusCommObj cco = new CircusCommObj ();
-        cco.setMsgType (CircusCommObj.mtype_reconfig);
+        cco.setMsgType (CircusCommConst.mtype_reconfig);
         cco.setDstSw (dstSw);
         cco.setLambda (lambda);
         cco.setTdmId (tdm_id);
@@ -81,7 +82,7 @@ public class CircusComm {
     public static boolean txTeardown_cs (int dstSw, int lambda, int tdm_id, ObjectOutputStream oos) {
         
         CircusCommObj cco = new CircusCommObj ();
-        cco.setMsgType (CircusCommObj.mtype_teardown);
+        cco.setMsgType (CircusCommConst.mtype_teardown);
         cco.setDstSw (dstSw);
         cco.setLambda (lambda);
         cco.setTdmId (tdm_id);
@@ -94,7 +95,7 @@ public class CircusComm {
         String srcIp, String dstIp, int lambda, int tdm_id, ObjectOutputStream oos) {
             
         CircusCommObj cco = new CircusCommObj ();
-        cco.setMsgType (CircusCommObj.mtype_setup_ps);
+        cco.setMsgType (CircusCommConst.mtype_setup_ps);
         
         /* setup CS part */
         cco.setLambda (lambda);
@@ -111,7 +112,7 @@ public class CircusComm {
         String srcIp, String dstIp, int lambda, int tdm_id, ObjectOutputStream oos) {
             
         CircusCommObj cco = new CircusCommObj ();
-        cco.setMsgType (CircusCommObj.mtype_modify_ps);
+        cco.setMsgType (CircusCommConst.mtype_modify_ps);
         
         /* setup CS part */
         cco.setLambda (lambda);
@@ -127,7 +128,7 @@ public class CircusComm {
     public static boolean txRmEntry_ps (String srcIp, String dstIp, ObjectOutputStream oos) {
         
         CircusCommObj cco = new CircusCommObj ();
-        cco.setMsgType (CircusCommObj.mtype_remove_ps);
+        cco.setMsgType (CircusCommConst.mtype_remove_ps);
         cco.setSrcIp (srcIp);
         cco.setDstIp (dstIp);
         

@@ -183,29 +183,40 @@ public class CSwitch implements DebugInterface, DataPlaneHandler {
     public class CntlPlaneServer implements Runnable {
     	public void run () {
             
-        	try {
-                /* initiate a socket to connect to the server */
-                Socket TCPsocket = new Socket (controladd, controlport);
-                
-                /* using object stream to retrieve the commobj */
-                ObjectInputStream ois = new ObjectInputStream (TCPsocket.getInputStream ());
-                
-                while (true) {
-                    Object obj = ois.readObject ();
+            while (true) {
+                try {
+                    /* initiate a socket to connect to the server */
+                    log ("Connecting to " + controladd + ":" + controlport);
+                    Socket TCPsocket = new Socket (controladd, controlport);
                     
-                    if (!(obj instanceof CircusCommObj)) {
-                        log ("bad type");
-                        continue;
-                    }
+                    /* using object stream to retrieve the commobj */
+                    ObjectOutputStream oos = new ObjectOutputStream (TCPsocket.getOutputStream ());
+                    
+                    /* 1st thing to do: send power on */
+                    CircusComm.txSysUp (selfID, CircusCommConst.msw_csSwitch, oos);
+                    
+                    ObjectInputStream ois = new ObjectInputStream (TCPsocket.getInputStream ());
+                    
+                    while (true) {
+                        log ("start to wait server msg");
+                        Object obj = ois.readObject ();
                         
-                    CircusCommObj cco = (CircusCommObj) obj; 
+                        if (!(obj instanceof CircusCommObj)) {
+                            log ("bad type");
+                            continue;
+                        }
+                            
+                        CircusCommObj cco = (CircusCommObj) obj; 
+                        
+                        /* process the cco */
+                    }
+                } catch (Exception e) {
                     
-                    /* process the cco */
-            	}
-        	} catch (Exception e) {
-        		CSwitch.log ("Ooops: " + e);
-                e.printStackTrace ();
-        	}
+                    CSwitch.log ("Ooops: " + e);
+                    e.printStackTrace ();
+                    break;
+                }
+            }
     	}
     }
     

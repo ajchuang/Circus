@@ -3,7 +3,7 @@ echo cleaning
 rm *.class
 
 echo compiling
-javac -cp './:CircusComm.jar' *.java
+javac -cp './:./lib/CircusComm.jar' CPSwitch.java Circus.java DebugInterface.java CPTable.java CircusConfig.java PPacket.java CPacket.java CSwitch.java DataPlaneHandler.java
 
 echo starting
-java -cp './:CircusComm.jar' Circus config.txt
+java -cp './:./lib/CircusComm.jar' Circus config.txt
