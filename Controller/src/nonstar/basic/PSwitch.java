@@ -2,6 +2,7 @@ package nonstar.basic;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Set;
 
 public class PSwitch extends Switch {
 	public PSwitch() {
@@ -35,5 +36,15 @@ public class PSwitch extends Switch {
 	@Override
 	public int getAvaiableLambda(int port) {
 		return 0;
+	}
+	
+	@Override
+	public Switch getNeighborSwitch(int port) {
+		return mapPortSwitch.get(port);
+	}
+	
+	@Override
+	public Set<Integer> getPortSet() {
+		return mapPortSwitch.keySet();
 	}
 }
