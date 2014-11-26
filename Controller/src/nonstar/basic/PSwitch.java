@@ -8,6 +8,7 @@ public class PSwitch extends Switch {
 	public PSwitch() {
 		super();
 		mapPortSwitch = new HashMap<Integer, Switch>();
+		mapSwitchPort = new HashMap<Switch, Integer>();
 		mapPortLambda = new HashMap<Integer, HashSet<Integer>>();
 	}
 	
@@ -35,7 +36,25 @@ public class PSwitch extends Switch {
 	
 	@Override
 	public int getAvaiableLambda(int port) {
-		return 0;
+		HashSet<Integer> lambdaSet;
+		
+		lambdaSet = mapPortLambda.get(port);
+		if (lambdaSet == null)
+			return 0;
+		int l = 1;
+		while (lambdaSet.contains(l))
+			l++;
+		return l;
+	}
+	
+	@Override
+	public boolean testLambda(int port, int lambda) {
+		HashSet<Integer> lambdaSet;
+		
+		lambdaSet = mapPortLambda.get(port);
+		if (lambdaSet == null)
+			return false;
+		return lambdaSet.contains(lambda);
 	}
 	
 	@Override
@@ -46,5 +65,10 @@ public class PSwitch extends Switch {
 	@Override
 	public Set<Integer> getPortSet() {
 		return mapPortSwitch.keySet();
+	}
+
+	@Override
+	public int getOutputPort(Switch tgtSw) {
+		return mapSwitchPort.get(tgtSw);
 	}
 }

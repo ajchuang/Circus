@@ -2,7 +2,6 @@ package nonstar.network;
 
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.Set;
 
 import nonstar.basic.Flow;
@@ -39,7 +38,36 @@ public class NetworkEnv implements NetworkTopo {
 		return null;
 	}
 	
-	private LinkedList<Switch> getPath(Switch srcSw, Switch dstSw) {
+	private Link establishLink(Switch srcSw, Switch dstSw) {
+		Link newLink = new Link();
+		int srcPort = srcSw.getOutputPort(dstSw);
+		int dstPort = dstSw.getOutputPort(srcSw);
+		int srcLambda = srcSw.getAvaiableLambda(srcPort);
+		int dstLambda = dstSw.getAvaiableLambda(dstPort);
+		
+		while (srcLambda != dstLambda) {
+			if (!dstSw.testLambda(dstPort,  srcLambda))
+				dstLambda = srcLambda;
+			else if (!srcSw.testLambda(srcPort, dstLambda))
+				srcLambda = dstLambda;
+			else {
+				do {
+					srcLambda++;
+				} while (srcSw.testLambda(srcPort, srcLambda));
+				do {
+					dstLambda++;
+				} while (dstSw.testLambda(dstPort, dstLambda));
+			}
+		}
+		
+		newLink.setSwitch(srcSw, srcPort);
+		newLink.setSwitch(dstSw, dstPort);
+		newLink.setLambda(srcLambda);
+		
+		return newLink;
+	}
+	
+	private Flow getFlow(Switch srcSw, Switch dstSw) {
 		HashMap<Switch, Integer> swDist = new HashMap<Switch, Integer>();
 		HashMap<Switch, Switch> swPrev= new HashMap<Switch, Switch>();
 		HashSet<Switch> toVisitSw = new HashSet<Switch>();
@@ -80,14 +108,13 @@ public class NetworkEnv implements NetworkTopo {
 		
 		/* Read shortest path */
 		Switch tmpSw = dstSw;
-		LinkedList<Switch> path = new LinkedList<Switch>();
+		Flow flow = new Flow();
 		while (swPrev.get(tmpSw) != null) {
-			path.addFirst(tmpSw);
+			flow.addLink(establishLink(swPrev.get(tmpSw), tmpSw));
 			tmpSw = swPrev.get(tmpSw);
 		}
-		path.addFirst(tmpSw);
 		
-		return path;
+		return flow;
 	}
 
 	@Override
@@ -102,11 +129,15 @@ public class NetworkEnv implements NetworkTopo {
 		Switch srcSw = mapIdSwitch.get(src);
 		Switch dstSw = mapIdSwitch.get(dst);
 		
-		LinkedList<Switch> path = getPath(srcSw, dstSw);
+		Flow flow = getFlow(srcSw, dstSw);
+		if (flow != null) {
+			Link newLink = new Link();
+			newLink.setSwitch(srcSw, -1);
+			newLink.setSwitch(dstSw, -1);
+			mapLinkFlow.put(newLink, flow);
+		}
 		
-		/* Establish links between switches in the path */
-		
-		return null;
+		return flow;
 	}
 	
 

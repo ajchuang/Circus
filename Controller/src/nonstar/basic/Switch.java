@@ -6,6 +6,7 @@ import java.util.Set;
 
 public abstract class Switch {
 	HashMap<Integer, Switch> mapPortSwitch;
+	HashMap<Switch, Integer> mapSwitchPort;
 	HashMap<Integer, HashSet<Integer>> mapPortLambda;
 	
 	public boolean allocLambda(int port, int lambda) {
@@ -20,11 +21,19 @@ public abstract class Switch {
 		return 0;
 	}
 	
+	public boolean testLambda(int port, int lambda) {
+		return false;
+	}
+	
 	public Switch getNeighborSwitch(int port) {
 		return null;
 	}
 	
 	public Set<Integer> getPortSet() {
 		return null;
+	}
+	
+	public int getOutputPort(Switch tgtSw) {
+		return -1;
 	}
 }
