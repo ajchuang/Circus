@@ -65,7 +65,7 @@ public class CircusCommObj implements Serializable {
     }
     
     /* getters */
-    public int setSender () {
+    public int getSender () {
         return m_sender;
     }
     

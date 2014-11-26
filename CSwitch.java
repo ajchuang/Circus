@@ -182,7 +182,6 @@ public class CSwitch implements DebugInterface, DataPlaneHandler {
     
     public class CntlPlaneServer implements Runnable {
     	public void run () {
-            
             while (true) {
                 try {
                     /* initiate a socket to connect to the server */
@@ -192,7 +191,7 @@ public class CSwitch implements DebugInterface, DataPlaneHandler {
                     /* using object stream to retrieve the commobj */
                     ObjectOutputStream oos = new ObjectOutputStream (TCPsocket.getOutputStream ());
                     
-                    /* 1st thing to do: send power on */
+                    /* first thing to do: send power on */
                     CircusComm.txSysUp (selfID, CircusCommConst.msw_csSwitch, oos);
                     
                     ObjectInputStream ois = new ObjectInputStream (TCPsocket.getInputStream ());
@@ -208,7 +207,7 @@ public class CSwitch implements DebugInterface, DataPlaneHandler {
                             
                         CircusCommObj cco = (CircusCommObj) obj; 
                         
-                        /* process the cco */
+                        /* TODO: process the cco */
                     }
                 } catch (Exception e) {
                     

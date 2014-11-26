@@ -1,6 +1,7 @@
 import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.Properties;
+import java.util.concurrent.ConcurrentHashMap;
 
 import java.io.*;
 import java.net.*;
@@ -12,6 +13,7 @@ public class CircusTestController {
     
     int m_dbgPort;
     int m_ctlPort;
+    ConcurrentHashMap<Integer, ObjectOutputStream> m_output;
     
     
     public static void log (String s) {
@@ -22,6 +24,7 @@ public class CircusTestController {
         
         m_dbgPort = dport;
         m_ctlPort = cport;
+        m_output = new ConcurrentHashMap<Integer, ObjectOutputStream> ();
         
         log ("CircusTestController: " + m_ctlPort + ":" + m_dbgPort);
     }
@@ -82,7 +85,27 @@ public class CircusTestController {
                     CircusCommObj cco = (CircusCommObj) obj; 
                     
                     /* process the cco */
-                    log (cco.toString ());
+                    int msg = cco.getMsgType (); 
+                    log ("Receiving " + msg + " from " + cco.getSender ());
+                    
+                    /* handle syson message */
+                    if (msg == CircusCommConst.mtype_sysup) {
+                        
+                        log ("Processing sysup from " + cco.getSender ());
+                        Integer ikey = Integer.valueOf (cco.getSender ());
+                        m_output.put (ikey, m_oos);
+                        continue;
+                        
+                    } else if (msg == CircusCommConst.mtype_sysdown) {
+                        
+                        log ("Processing sysdown from " + cco.getSender ());
+                        Integer ikey = Integer.valueOf (cco.getSender ());
+                        m_output.remove (ikey, m_oos);
+                        
+                        /* terminate this thread */
+                        return;
+                    }
+                    
                 } catch (Exception e) {
                     log ("Ooops: " + e);
                     e.printStackTrace ();
@@ -101,9 +124,11 @@ public class CircusTestController {
             m_me = me;
         }
         
+        /* it's just a server thread used to accept the incoming connection */
         public void run () {
+            
             try {
-                
+                /* welcome sockets to listen to the incoming sockets */
                 ServerSocket ss = new ServerSocket (m_cpPort);
                 
                 while (true) {
@@ -126,6 +151,84 @@ public class CircusTestController {
         
         public DebugServer (int dport) {
             m_dbgPort = dport;
+        }
+        
+        void procCsIns (String cmd, PrintStream out) {
+            
+            out.println ("Processing CS insert...");
+            
+            String toks[] = cmd.split ("\\s+");
+            
+            if (toks.length != 5) {
+                out.println ("format error");
+                return;
+            }
+            
+            int swId = Integer.parseInt (toks[1]);
+            int toId = Integer.parseInt (toks[2]);
+            int lambda = Integer.parseInt (toks[3]);
+            int tdmId = Integer.parseInt (toks[4]);
+            
+            Integer iid = Integer.valueOf (swId);
+            ObjectOutputStream oos = m_output.get (iid);
+            
+            if (oos == null) {
+                out.println ("ERROR: sw id " + swId + " is not found");
+                return;
+            }
+            
+            /* send setup message */
+            if (CircusComm.txSetup_cs (toId, lambda, tdmId, oos))
+                out.println ("OK");
+            else
+                out.println ("ERROR: Cplane failed");
+        }
+        
+        void procPsIns (String cmd, PrintStream out) {
+            
+            out.println ("Processing PS insert...");
+            
+            String toks[] = cmd.split ("\\s+");
+            
+            if (toks.length != 7) {
+                out.println ("format error");
+                return;
+            }
+            
+            int swId    = Integer.parseInt (toks[1]);
+            int toId    = Integer.parseInt (toks[2]);
+            
+            int lambda  = Integer.parseInt (toks[3]);
+            int tdmId   = Integer.parseInt (toks[4]);
+            String sip  = toks[5];
+            String dip  = toks[6];
+            
+            Integer iid = Integer.valueOf (swId);
+            ObjectOutputStream oos = m_output.get (iid);
+            
+            if (oos == null) {
+                out.println ("ERROR: sw id " + swId + " is not found");
+                return;
+            }
+            
+            
+            if (CircusComm.txAddEntry_ps (sip, dip, lambda, tdmId, oos))
+                out.println ("OK");
+            else
+                out.println ("ERROR: fail to write");
+                
+            return;
+        }
+        
+        /* handle the command */
+        void procCmd (String cmd, PrintStream out) {
+            
+            if (cmd.startsWith ("cs_insert")) {
+                procCsIns (cmd, out);
+            } else if (cmd.startsWith ("ps_insert")) {
+                procPsIns (cmd, out);
+            }
+            
         }
         
         public void run () {
@@ -162,6 +265,7 @@ public class CircusTestController {
                         log (cmd);
                         
                         /* TODO */
+                        procCmd (cmd, out);
                     }
                     
                     /* clean up */
