@@ -23,13 +23,15 @@ public class CircusCommConst {
     /**************************************************************************/
     /* PARAM key Constants */
     final static String mkey_swId   = "SWID";
-    final static String mkey_swType = "SW_TYPE";
+    final static String mkey_swType = "SW_TYPE"; //0:C 1:CP
     
-    final static String mkey_lambda = "LAMBDA";
+    final static String mkey_inlambda = "IN_LAMBDA";
+    final static String mkey_outlambda = "OUT_LAMBDA";
     final static String mkey_tdmId  = "TDM_ID";
     final static String mkey_srcsw  = "SRC_SW";
     final static String mkey_dstsw  = "DST_SW";
     
+    final static String mkey_CPdir  = "CP_dir";// this is to store the direction of a CPswitch entry, CP means from c to p, PC means... ,CC means....
     final static String mkey_prot   = "PROT";
     final static String mkey_srcip  = "SRC_IP";
     final static String mkey_dstip  = "DST_IP";

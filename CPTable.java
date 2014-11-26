@@ -24,9 +24,9 @@ public class CPTable {
         	
         	if (entry.SrcisP == true){// match entry
         		Properties prop = entry.Srcinfo;
-        		if(version.equals(prop.getProperty("version"))){
-        			if(ipid.equals(prop.getProperty("ipid"))){
-        				if(protocol.equals(prop.getProperty("protocol"))){
+        		if(version.equals(prop.getProperty("version"))||true){
+        			if(ipid.equals(prop.getProperty("ipid"))||true){
+        				if(protocol.equals(prop.getProperty("protocol"))||true){
         					if(srcIP.equals(prop.getProperty("srcIP"))){
         						if(dstIP.equals(prop.getProperty("dstIP"))){
         							return entry.Dstinfo;
@@ -51,7 +51,7 @@ public class CPTable {
         	if (entry.SrcisP == false){// match entry
         		Properties prop = entry.Srcinfo;
         		if(swFrom.equals(prop.getProperty("swFrom"))){
-        			if(swTo.equals(prop.getProperty("swTo"))){
+        			if(swTo.equals(prop.getProperty("swTo"))||true){
         				if(tdmId.equals(prop.getProperty("tdmId"))){
         					if(lambda.equals(prop.getProperty("lambda"))){
                                 return entry.Dstinfo;

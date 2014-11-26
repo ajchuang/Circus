@@ -1,6 +1,10 @@
 import java.net.InetAddress;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.Socket;
+import java.util.Properties;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.PrintStream;
 
 public class CPSwitch extends CSwitch implements DebugInterface, DataPlaneHandler {
@@ -91,6 +95,150 @@ public class CPSwitch extends CSwitch implements DebugInterface, DataPlaneHandle
         return;
     }
     
+    
+    
+    @Override
+    public void parsecco(CircusCommObj cco){
+    	//        int swFrom;
+        //        int lambda;
+        //        int tdmId;
+        
+        //        /* PS domain */
+        //        int version;
+        //        int ipid;
+        //        int protocol;
+        //        InetAddress srcIp;
+        //        InetAddress dstIp;
+    	
+    	int msgtype = cco.getMsgType();
+    	String dir = cco.getCPdir();
+    	Properties Srcinfo = new Properties();
+    	Properties Dstinfo = new Properties();
+    	
+    	int lambda = cco.getinLambda (); 
+        int inSw = cco.getSrcSw();
+        int tdm_id = cco.getTdmId ();
+         /* setup PS part */
+        String srcIp = cco.getSrcIp ();
+        String dstIp = cco.getDstIp ();
+        
+        if(cco.getSwType() == 0){
+        	parsecco_CS(cco);
+        }
+        
+        else if(msgtype == CircusCommConst.mtype_setup_ps ){
+    		
+    		if(dir.equals("CP")){
+    	        Srcinfo.setProperty("swFrom", inSw+"");
+    	        Srcinfo.setProperty("lambda", lambda+"");
+    	        Srcinfo.setProperty("tdmId", tdm_id+"");
+    	        
+    	        Dstinfo.setProperty("srcIp", srcIp);
+    	        Dstinfo.setProperty("dstIp", dstIp);
+
+    	        m_cpTable.insertEntry( Srcinfo,  Dstinfo);
+    		}
+    		
+    		else if(dir.equals("PC")){
+    			Srcinfo.setProperty("srcIp", srcIp);
+    	        Srcinfo.setProperty("dstIp", dstIp);
+    	        
+    			Dstinfo.setProperty("swTo", inSw+"");
+    			Dstinfo.setProperty("lambda", lambda+"");
+    			Dstinfo.setProperty("tdmId", tdm_id+"");
+
+    	        m_cpTable.insertEntry( Srcinfo,  Dstinfo);
+    		}
+    		
+    	}
+        
+        else if(msgtype == CircusCommConst.mtype_remove_ps ){
+    		
+    		if(dir.equals("CP")){
+    	        Srcinfo.setProperty("swFrom", inSw+"");
+    	        Srcinfo.setProperty("lambda", lambda+"");
+    	        Srcinfo.setProperty("tdmId", tdm_id+"");
+    	        
+    	        Dstinfo.setProperty("srcIp", srcIp);
+    	        Dstinfo.setProperty("dstIp", dstIp);
+
+    	        m_cpTable.removeEntry( Srcinfo);
+    		}
+    		
+    		else if(dir.equals("PC")){
+    			Srcinfo.setProperty("srcIp", srcIp);
+    	        Srcinfo.setProperty("dstIp", dstIp);
+    	        
+    			Dstinfo.setProperty("swTo", inSw+"");
+    			Dstinfo.setProperty("lambda", lambda+"");
+    			Dstinfo.setProperty("tdmId", tdm_id+"");
+
+    	        m_cpTable.removeEntry( Srcinfo);
+    		}
+    		
+    	}
+        
+        else if(msgtype == CircusCommConst.mtype_modify_ps ){
+    		
+    		if(dir.equals("CP")){
+    	        Srcinfo.setProperty("swFrom", inSw+"");
+    	        Srcinfo.setProperty("lambda", lambda+"");
+    	        Srcinfo.setProperty("tdmId", tdm_id+"");
+    	        
+    	        Dstinfo.setProperty("srcIp", srcIp);
+    	        Dstinfo.setProperty("dstIp", dstIp);
+    	        if(m_cpTable.removeEntry(Srcinfo)){
+    	        	m_cpTable.insertEntry( Srcinfo,  Dstinfo);
+    	        }
+    	        else {
+    	        	log ("Ooops: fail to reconfig");
+    	        }
+    		}
+    		
+    		else if(dir.equals("PC")){
+    			Srcinfo.setProperty("srcIp", srcIp);
+    	        Srcinfo.setProperty("dstIp", dstIp);
+    	        
+    			Dstinfo.setProperty("swTo", inSw+"");
+    			Dstinfo.setProperty("lambda", lambda+"");
+    			Dstinfo.setProperty("tdmId", tdm_id+"");
+
+    			if(m_cpTable.removeEntry(Srcinfo)){
+    	        	m_cpTable.insertEntry( Srcinfo,  Dstinfo);
+    	        }
+    	        else {
+    	        	log ("Ooops: fail to reconfig");
+    	        }    		}
+    		
+    	}
+    	
+    }
+    
+    public void parsecco_CS(CircusCommObj cco){
+    	int msgtype = cco.getMsgType();
+    	
+    	int dstSw= cco.getDstSw();
+		int srcSw= cco.getSrcSw();
+		int inlambda= cco.getinLambda();
+		int outlambda= cco.getoutLambda();
+		int tdm_id= cco.getTdmId();
+		
+    	boolean result;
+		if(msgtype == CircusCommConst.mtype_setup_cs)
+    		 result = insertcircuit(srcSw, inlambda, tdm_id, dstSw, outlambda);
+		
+    	else if(msgtype == CircusCommConst.mtype_teardown)
+    		 result = removecircuit(srcSw, inlambda, tdm_id);
+		
+    	else if(msgtype == CircusCommConst.mtype_reconfig)
+    		if(removecircuit(srcSw, inlambda, tdm_id)){
+    			insertcircuit(srcSw, inlambda, tdm_id, dstSw, outlambda);
+    		}
+    }
+    
+    
+    
+    
     /* inner class for ps switch */
     public class PacketSwitchServer implements Runnable {
         
@@ -102,6 +250,7 @@ public class CPSwitch extends CSwitch implements DebugInterface, DataPlaneHandle
             m_psPort = port;
             m_hdlr = hdlr;
         }
+        
         
         public void run () {
                 

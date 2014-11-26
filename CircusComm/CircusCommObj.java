@@ -36,8 +36,17 @@ public class CircusCommObj implements Serializable {
         m_msgType = type;
     }
     
-    public void setLambda (int lambda) {
-        setParam (CircusCommConst.mkey_lambda, Integer.toString (lambda));
+    public void setinLambda (int lambda) {
+        setParam (CircusCommConst.mkey_inlambda, Integer.toString (lambda));
+    }
+    
+    public void setoutLambda (int lambda) {
+        setParam (CircusCommConst.mkey_outlambda, Integer.toString (lambda));
+    }
+    
+    public void setCPdir (String CP) {
+    	setParam (CircusCommConst.mkey_CPdir, (CP));
+       
     }
     
     public void setTdmId (int tdm) {
@@ -77,8 +86,13 @@ public class CircusCommObj implements Serializable {
         return m_msgType;
     }
     
-    public int setLambda () {
-        String s = getParam (CircusCommConst.mkey_lambda);
+    public int getinLambda () {
+        String s = getParam (CircusCommConst.mkey_inlambda);
+        return Integer.parseInt (s);
+    }
+    
+    public int getoutLambda () {
+        String s = getParam (CircusCommConst.mkey_outlambda);
         return Integer.parseInt (s);
     }
     
@@ -108,6 +122,11 @@ public class CircusCommObj implements Serializable {
     public int getSwType () {
         String s = getParam (CircusCommConst.mkey_swType);
         return Integer.parseInt (s);
+    }
+    
+    public String getCPdir () {
+        String s = getParam (CircusCommConst.mkey_CPdir);
+        return s;
     }
     
     /* generic method for getting/setting params */

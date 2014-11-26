@@ -206,7 +206,7 @@ public class CSwitch implements DebugInterface, DataPlaneHandler {
                         }
                             
                         CircusCommObj cco = (CircusCommObj) obj; 
-                        
+                        parsecco(cco );
                         /* TODO: process the cco */
                     }
                 } catch (Exception e) {
@@ -217,6 +217,29 @@ public class CSwitch implements DebugInterface, DataPlaneHandler {
                 }
             }
     	}
+    }
+    
+    
+    public void parsecco(CircusCommObj cco){
+    	int msgtype = cco.getMsgType();
+    	
+    	int dstSw= cco.getDstSw();
+		int srcSw= cco.getSrcSw();
+		int inlambda= cco.getinLambda();
+		int outlambda= cco.getoutLambda();
+		int tdm_id= cco.getTdmId();
+		
+    	boolean result;
+		if(msgtype == CircusCommConst.mtype_setup_cs)
+    		 result = insertcircuit(srcSw, inlambda, tdm_id, dstSw, outlambda);
+		
+    	else if(msgtype == CircusCommConst.mtype_teardown)
+    		 result = removecircuit(srcSw, inlambda, tdm_id);
+		
+    	else if(msgtype == CircusCommConst.mtype_reconfig)
+    		if(removecircuit(srcSw, inlambda, tdm_id)){
+    			insertcircuit(srcSw, inlambda, tdm_id, dstSw, outlambda);
+    		}
     }
     
     public class DebugServer implements Runnable {

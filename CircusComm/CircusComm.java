@@ -58,80 +58,188 @@ public class CircusComm {
     }
     
     /* CS functions */
-    public static boolean txSetup_cs (int dstSw, int lambda, int tdm_id, ObjectOutputStream oos) {
+    public static boolean txSetup_cs (int dstSw, int srcSw, int inlambda, int outlambda, int tdm_id, ObjectOutputStream oos) {
         
         CircusCommObj cco = new CircusCommObj ();
         cco.setMsgType (CircusCommConst.mtype_setup_cs);
+        cco.setSrcSw (srcSw);
         cco.setDstSw (dstSw);
-        cco.setLambda (lambda);
+        cco.setinLambda (inlambda);
+        cco.setoutLambda (outlambda);
         cco.setTdmId (tdm_id);
         return send (cco, oos);
         
     }
     
-    public static boolean txReconfig_cs (int dstSw, int lambda, int tdm_id, ObjectOutputStream oos) {
+    public static boolean txReconfig_cs (int dstSw, int srcSw, int inlambda, int outlambda, int tdm_id, ObjectOutputStream oos) {
         
         CircusCommObj cco = new CircusCommObj ();
         cco.setMsgType (CircusCommConst.mtype_reconfig);
+        cco.setSrcSw (srcSw);
         cco.setDstSw (dstSw);
-        cco.setLambda (lambda);
+        cco.setinLambda (inlambda);
+        cco.setoutLambda (outlambda);
         cco.setTdmId (tdm_id);
         return send (cco, oos);
     }
     
-    public static boolean txTeardown_cs (int dstSw, int lambda, int tdm_id, ObjectOutputStream oos) {
+    public static boolean txTeardown_cs (int dstSw, int srcSw, int inlambda, int outlambda, int tdm_id, ObjectOutputStream oos) {
         
         CircusCommObj cco = new CircusCommObj ();
         cco.setMsgType (CircusCommConst.mtype_teardown);
+        cco.setSrcSw (srcSw);
         cco.setDstSw (dstSw);
-        cco.setLambda (lambda);
+        cco.setinLambda (inlambda);
+        cco.setoutLambda (outlambda);
         cco.setTdmId (tdm_id);
         return send (cco, oos);
     }
     
     /* PS functions */
     /* this entry: PS - CS entry */
-    public static boolean txAddEntry_ps (
-        String srcIp, String dstIp, int lambda, int tdm_id, ObjectOutputStream oos) {
-            
-        CircusCommObj cco = new CircusCommObj ();
+    public static boolean txAddEntry_ps_C2P (String srcIp, String dstIp, int inSw, int lambda, int tdm_id, ObjectOutputStream oos) {
+        //entrydir: CP or PC or CC 
+    	 CircusCommObj cco = new CircusCommObj ();
+         cco.setMsgType (CircusCommConst.mtype_setup_ps);
+         cco.setCPdir("CP");
+         cco.setSwType(1);
+         /* setup CS part */
+
+         cco.setinLambda (lambda); 
+         cco.setSrcSw(inSw);
+         cco.setTdmId (tdm_id);
+         /* setup PS part */
+         cco.setSrcIp (srcIp);
+         cco.setDstIp (dstIp);    
+         return send (cco, oos);
+    }
+    
+    public static boolean txAddEntry_ps_P2C (String srcIp, String dstIp, int outSw, int lambda, int tdm_id, ObjectOutputStream oos) {
+        //entrydir: CP or PC or CC 
+    	CircusCommObj cco = new CircusCommObj ();
         cco.setMsgType (CircusCommConst.mtype_setup_ps);
-        
+        cco.setCPdir("PC");
+        cco.setSwType(1);
         /* setup CS part */
-        cco.setLambda (lambda);
+        cco.setinLambda (lambda); 
+        cco.setSrcSw(outSw);
         cco.setTdmId (tdm_id);
-        
         /* setup PS part */
         cco.setSrcIp (srcIp);
-        cco.setDstIp (dstIp);
-        
+        cco.setDstIp (dstIp);    
         return send (cco, oos);
     }
     
-    public static boolean txModifyEntry_ps (
-        String srcIp, String dstIp, int lambda, int tdm_id, ObjectOutputStream oos) {
-            
-        CircusCommObj cco = new CircusCommObj ();
+    public static boolean txAddEntry_ps_C2C (int dstSw, int srcSw, int inlambda, int outlambda, int tdm_id, ObjectOutputStream oos) {
+        //entrydir: CP or PC or CC 
+    	CircusCommObj cco = new CircusCommObj ();
+        cco.setMsgType (CircusCommConst.mtype_setup_ps);
+        cco.setCPdir("CC");
+        cco.setSwType(0);
+        /* setup CS part */
+        cco.setSrcSw (srcSw);
+        cco.setDstSw (dstSw);
+        cco.setinLambda (inlambda);
+        cco.setoutLambda (outlambda);
+        cco.setTdmId (tdm_id);
+        return send (cco, oos);
+    }
+    
+    
+    public static boolean txModifyEntry_ps_C2P (String srcIp, String dstIp, int inSw, int lambda, int tdm_id, ObjectOutputStream oos) {
+        //entrydir: CP or PC or CC 
+    	 CircusCommObj cco = new CircusCommObj ();
+         cco.setMsgType (CircusCommConst.mtype_modify_ps);
+         cco.setCPdir("CP");
+         cco.setSwType(1);
+         /* setup CS part */
+
+         cco.setinLambda (lambda); 
+         cco.setSrcSw(inSw);
+         cco.setTdmId (tdm_id);
+         /* setup PS part */
+         cco.setSrcIp (srcIp);
+         cco.setDstIp (dstIp);    
+         return send (cco, oos);
+    }
+    
+    public static boolean txModifyEntry_ps_P2C (String srcIp, String dstIp, int outSw, int lambda, int tdm_id, ObjectOutputStream oos) {
+        //entrydir: CP or PC or CC 
+    	CircusCommObj cco = new CircusCommObj ();
         cco.setMsgType (CircusCommConst.mtype_modify_ps);
-        
+        cco.setCPdir("PC");
+        cco.setSwType(1);
         /* setup CS part */
-        cco.setLambda (lambda);
+        cco.setinLambda (lambda); 
+        cco.setSrcSw(outSw);
         cco.setTdmId (tdm_id);
-        
         /* setup PS part */
         cco.setSrcIp (srcIp);
-        cco.setDstIp (dstIp);
-        
+        cco.setDstIp (dstIp);    
         return send (cco, oos);
     }
     
-    public static boolean txRmEntry_ps (String srcIp, String dstIp, ObjectOutputStream oos) {
-        
-        CircusCommObj cco = new CircusCommObj ();
-        cco.setMsgType (CircusCommConst.mtype_remove_ps);
-        cco.setSrcIp (srcIp);
-        cco.setDstIp (dstIp);
-        
+    public static boolean txModifyEntry_ps_C2C (int dstSw, int srcSw, int inlambda, int outlambda, int tdm_id, ObjectOutputStream oos) {
+        //entrydir: CP or PC or CC 
+    	CircusCommObj cco = new CircusCommObj ();
+        cco.setMsgType (CircusCommConst.mtype_modify_ps);
+        cco.setCPdir("CC");
+        cco.setSwType(0);
+        /* setup CS part */
+        cco.setSrcSw (srcSw);
+        cco.setDstSw (dstSw);
+        cco.setinLambda (inlambda);
+        cco.setoutLambda (outlambda);
+        cco.setTdmId (tdm_id);
         return send (cco, oos);
     }
+    
+    public static boolean txRmEntry_ps_C2P (String srcIp, String dstIp, int inSw, int lambda, int tdm_id, ObjectOutputStream oos) {
+        //entrydir: CP or PC or CC 
+    	 CircusCommObj cco = new CircusCommObj ();
+         cco.setMsgType (CircusCommConst.mtype_remove_ps);
+         cco.setCPdir("CP");
+         cco.setSwType(1);
+         /* setup CS part */
+
+         cco.setinLambda (lambda); 
+         cco.setSrcSw(inSw);
+         cco.setTdmId (tdm_id);
+         /* setup PS part */
+         cco.setSrcIp (srcIp);
+         cco.setDstIp (dstIp);    
+         return send (cco, oos);
+    }
+    
+    public static boolean txRmEntry_ps_P2C (String srcIp, String dstIp, int outSw, int lambda, int tdm_id, ObjectOutputStream oos) {
+        //entrydir: CP or PC or CC 
+    	CircusCommObj cco = new CircusCommObj ();
+        cco.setMsgType (CircusCommConst.mtype_remove_ps);
+        cco.setCPdir("PC");
+        cco.setSwType(1);
+        /* setup CS part */
+        cco.setinLambda (lambda); 
+        cco.setSrcSw(outSw);
+        cco.setTdmId (tdm_id);
+        /* setup PS part */
+        cco.setSrcIp (srcIp);
+        cco.setDstIp (dstIp);    
+        return send (cco, oos);
+    }
+    
+    public static boolean txRmEntry_ps_C2C (int dstSw, int srcSw, int inlambda, int outlambda, int tdm_id, ObjectOutputStream oos) {
+        //entrydir: CP or PC or CC 
+    	CircusCommObj cco = new CircusCommObj ();
+        cco.setMsgType (CircusCommConst.mtype_remove_ps);
+        cco.setCPdir("CC");
+        cco.setSwType(0);
+        /* setup CS part */
+        cco.setSrcSw (srcSw);
+        cco.setDstSw (dstSw);
+        cco.setinLambda (inlambda);
+        cco.setoutLambda (outlambda);
+        cco.setTdmId (tdm_id);
+        return send (cco, oos);
+    }
+    
 }
