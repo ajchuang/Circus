@@ -1,3 +1,5 @@
+package CircusCommunication;
+
 import java.net.Socket;
 import java.io.ObjectOutputStream;
 

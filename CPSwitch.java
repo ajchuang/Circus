@@ -7,6 +7,8 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.PrintStream;
 
+import CircusCfg.*;
+
 public class CPSwitch extends CSwitch implements DebugInterface, DataPlaneHandler {
     
     CPTable m_cpTable;

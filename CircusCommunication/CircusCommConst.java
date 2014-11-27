@@ -1,3 +1,5 @@
+package CircusCommunication;
+
 public class CircusCommConst {
 
     /* Public Interface */

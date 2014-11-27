@@ -8,6 +8,8 @@ import java.util.*;
 import java.nio.*;
 import java.nio.channels.*;
 
+import CircusCfg.*;
+
 public class CSwitch implements DebugInterface, DataPlaneHandler {
 	final static String dest = "destID";
     final static String length = "length";

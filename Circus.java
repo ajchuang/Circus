@@ -1,6 +1,7 @@
 import java.util.Scanner;
 import java.util.StringTokenizer;
 import java.io.File;
+import CircusCfg.*;
 
 public class Circus {
 

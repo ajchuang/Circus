@@ -3,6 +3,8 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
 
+import CircusCfg.*;
+
 public class CPacket {
     
     int m_swFrom;
