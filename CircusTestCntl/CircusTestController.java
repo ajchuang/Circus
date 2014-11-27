@@ -2,12 +2,16 @@ import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
-
 import java.io.*;
 import java.net.*;
 import java.util.*;
 import java.nio.*;
 import java.nio.channels.*;
+
+// cmd format: {cs_insert swId dstSw srcSw inlambda outlambda tdm_id}
+
+//cmd format: {PS_insert swId dir srcIp dstIp out/in_Sw lambda tdm_id}
+//dir can be CP or PC mean flow is from C2P or P2C
 
 public class CircusTestController {
     
@@ -154,20 +158,24 @@ public class CircusTestController {
         }
         
         void procCsIns (String cmd, PrintStream out) {
-            
+        	// cmd format: {cs_insert swId dstSw srcSw inlambda outlambda tdm_id}
+            //  txSetup_cs (int dstSw, int srcSw, int inlambda, int outlambda, int tdm_id, ObjectOutputStream oos) {
+
             out.println ("Processing CS insert...");
             
             String toks[] = cmd.split ("\\s+");
-            
-            if (toks.length != 5) {
+
+            if (toks.length != 7) {
                 out.println ("format error");
                 return;
             }
             
             int swId = Integer.parseInt (toks[1]);
-            int toId = Integer.parseInt (toks[2]);
-            int lambda = Integer.parseInt (toks[3]);
-            int tdmId = Integer.parseInt (toks[4]);
+            int dstSw = Integer.parseInt (toks[2]);
+            int srcSw = Integer.parseInt (toks[3]);
+            int inlambda = Integer.parseInt (toks[4]);
+            int outlambda = Integer.parseInt (toks[5]);
+            int tdmid = Integer.parseInt (toks[6]);
             
             Integer iid = Integer.valueOf (swId);
             ObjectOutputStream oos = m_output.get (iid);
@@ -178,30 +186,33 @@ public class CircusTestController {
             }
             
             /* send setup message */
-            if (CircusComm.txSetup_cs (toId, lambda, tdmId, oos))
+            if (CircusComm.txSetup_cs (dstSw,srcSw, inlambda,outlambda, tdmid, oos))
                 out.println ("OK");
             else
                 out.println ("ERROR: Cplane failed");
         }
         
         void procPsIns (String cmd, PrintStream out) {
-            
+        	// cmd format: {PS_insert swId dir srcIp dstIp out/in_Sw lambda tdm_id}
+        	//dir can be CP or PC mean flow is from C2P or P2C
+        	//txAddEntry_ps_C2P (String srcIp, String dstIp, int inSw, int lambda, int tdm_id, ObjectOutputStream oos) 
             out.println ("Processing PS insert...");
             
             String toks[] = cmd.split ("\\s+");
             
-            if (toks.length != 7) {
+            if (toks.length != 8) {
                 out.println ("format error");
                 return;
             }
             
             int swId    = Integer.parseInt (toks[1]);
-            int toId    = Integer.parseInt (toks[2]);
-            
-            int lambda  = Integer.parseInt (toks[3]);
-            int tdmId   = Integer.parseInt (toks[4]);
-            String sip  = toks[5];
-            String dip  = toks[6];
+            String dir = toks[2];
+            String srcIp  = toks[3];
+            String dstIp   = toks[4];
+            int inoutSw   = Integer.parseInt (toks[5]);
+            int lambda = Integer.parseInt (toks[6]);
+            int tdmId = Integer.parseInt (toks[6]);
+
             
             Integer iid = Integer.valueOf (swId);
             ObjectOutputStream oos = m_output.get (iid);
@@ -211,13 +222,23 @@ public class CircusTestController {
                 return;
             }
             
-            
-            if (CircusComm.txAddEntry_ps (sip, dip, lambda, tdmId, oos))
+            if(dir.equals("CP")){
+            if (CircusComm.txAddEntry_ps_C2P ( srcIp,  dstIp,  inoutSw,  lambda,  tdmId,  oos) )
                 out.println ("OK");
             else
                 out.println ("ERROR: fail to write");
                 
             return;
+            }
+            
+            else if(dir.equals("PC")){
+                if (CircusComm.txAddEntry_ps_P2C ( srcIp,  dstIp,  inoutSw,  lambda,  tdmId,  oos))
+                    out.println ("OK");
+                else
+                    out.println ("ERROR: fail to write");
+                    
+                return;
+                }
         }
         
         /* handle the command */
