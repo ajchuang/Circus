@@ -26,6 +26,10 @@ public class CircusConfig {
     final static String m_propPortCnt = "PORT_CNT";
     final static String m_propPortNum = "PORT_";
     
+    void log (String s) {
+        System.out.println ("[CircusConfig] " + s);
+    }
+    
     /* singleton implementation */
     private CircusConfig () {
         m_swList = new HashMap<Integer, Properties> ();
@@ -46,10 +50,10 @@ public class CircusConfig {
             m_cntlAddr = InetAddress.getByName (ip);
             m_cntlPort = Integer.parseInt (port);
         
-            Circus.log ("Controller " + ip + ":" + port);
+            log ("Controller " + ip + ":" + port);
         
         } catch (Exception e) {
-            Circus.log ("Ooops: " + e);
+            log ("Ooops: " + e);
         }
     }
     
@@ -79,7 +83,7 @@ public class CircusConfig {
         Properties prop = new Properties ();
         
         if (m_swList.containsKey (iid)) {
-            Circus.log ("duplicate id: " + sid);
+            log ("duplicate id: " + sid);
             System.exit (0);
         }
         
@@ -90,7 +94,7 @@ public class CircusConfig {
         prop.setProperty (m_propDual, dual);
         prop.setProperty (m_propPSport, psport);
         
-        Circus.log ("Switch " + sid + " added ( " + sip + ":" + sport + ":" + dual + ":" + psport + " )");
+        log ("Switch " + sid + " added ( " + sip + ":" + sport + ":" + dual + ":" + psport + " )");
     }
     
     public String getSwAddr (int id) {
@@ -98,7 +102,7 @@ public class CircusConfig {
         Integer iid = Integer.valueOf (id);
         
         if (m_swList.containsKey (iid) == false) {
-            Circus.log ("Use an invalid key: " + id);
+            log ("Use an invalid key: " + id);
             return null;
         } 
         
@@ -111,7 +115,7 @@ public class CircusConfig {
         Integer iid = Integer.valueOf (id);
         
         if (m_swList.containsKey (iid) == false) {
-            Circus.log ("Use an invalid key: " + id);
+            log ("Use an invalid key: " + id);
             return -1;
         } 
         
@@ -123,7 +127,7 @@ public class CircusConfig {
         Integer iid = Integer.valueOf (id);
         
         if (m_swList.containsKey (iid) == false) {
-            Circus.log ("Use an invalid key: " + id);
+            log ("Use an invalid key: " + id);
             return -1;
         } 
         
@@ -135,7 +139,7 @@ public class CircusConfig {
         Integer iid = Integer.valueOf (id);
         
         if (m_swList.containsKey (iid) == false) {
-            Circus.log ("Use an invalid key: " + id);
+            log ("Use an invalid key: " + id);
             return false;
         } 
         
@@ -150,7 +154,7 @@ public class CircusConfig {
         Integer iid = Integer.valueOf (id);
         
         if (m_swList.containsKey (iid) == false) {
-            Circus.log ("Use an invalid key: " + id);
+            log ("Use an invalid key: " + id);
             return -1;
         } 
         
@@ -165,12 +169,12 @@ public class CircusConfig {
         Integer iid = Integer.valueOf (id);
         
         if (m_swList.containsKey (iid) == false) {
-            Circus.log ("invalid key: " + sid);
+            log ("invalid key: " + sid);
             System.exit (0);
         }
         
         if (m_swCfg.containsKey (iid) == true) {
-            Circus.log ("dup key: " + sid);
+            log ("dup key: " + sid);
             System.exit (0);
         }
         
@@ -179,19 +183,19 @@ public class CircusConfig {
         
         m_swCfg.put (iid, prop);
         
-        Circus.log ("switch " + sid + " is installed");
+        log ("switch " + sid + " is installed");
     }
     
     /* add switch connection config */
     public void addSwPortCfg (String sid, int port_id, String to_id) {
         
-        Circus.log ("addSwPortCfg: " + sid + ":" + port_id + ":" + to_id);
+        log ("addSwPortCfg: " + sid + ":" + port_id + ":" + to_id);
         
         int id = Integer.parseInt (sid);
         Integer iid = Integer.valueOf (id);
         
         if (m_swCfg.containsKey (iid) == false) {
-            Circus.log ("invalid id: " + sid);
+            log ("invalid id: " + sid);
             System.exit (0);
         }
         
