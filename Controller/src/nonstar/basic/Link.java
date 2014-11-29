@@ -15,11 +15,13 @@ public class Link {
 	public boolean setSwitch(Switch sw, int port) {
 		if (mapSwPort.containsKey(sw))
 			return false;
+		System.out.println("LinksetSwitch:" + sw + "/port" + port);
 		mapSwPort.put(sw, port);
 		return true;
 	}
 	
 	public void setLambda(int l) {
+		System.out.println("LinksetLambda:" + l);
 		lambda = l;
 	}
 	

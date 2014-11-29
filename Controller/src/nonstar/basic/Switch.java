@@ -5,9 +5,17 @@ import java.util.HashSet;
 import java.util.Set;
 
 public abstract class Switch {
+	int id;
 	HashMap<Integer, Switch> mapPortSwitch;
 	HashMap<Switch, Integer> mapSwitchPort;
 	HashMap<Integer, HashSet<Integer>> mapPortLambda;
+	
+	public void setId(int swId) {
+	}
+	
+	public boolean connectSwitch(int port, Switch sw) {
+		return false;
+	}
 	
 	public boolean allocLambda(int port, int lambda) {
 		return false;

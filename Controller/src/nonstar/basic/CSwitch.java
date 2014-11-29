@@ -13,6 +13,25 @@ public class CSwitch extends Switch {
 	}
 	
 	@Override
+	public void setId(int swId) {
+		id = swId;
+	}
+	
+	public String toString() {
+		return "Sw" + Integer.toString(id);
+	}
+	
+	@Override
+	public boolean connectSwitch(int port, Switch sw) {
+		if (mapPortSwitch.containsKey(port) || mapSwitchPort.containsKey(sw))
+			return false;
+		System.out.println("CSconnectSw:" + sw.toString() + "/port" + port);
+		mapPortSwitch.put(port, sw);
+		mapSwitchPort.put(sw, port);
+		return true;
+	}
+	
+	@Override
 	public boolean allocLambda(int port, int lambda) {
 		HashSet<Integer> lambdaSet;
 		
@@ -21,6 +40,7 @@ public class CSwitch extends Switch {
 			lambdaSet = new HashSet<Integer>();
 			mapPortLambda.put(port, lambdaSet);
 		}
+		System.out.println("CSallocLambda:port" + port + "/lambda" + lambda);
 		return lambdaSet.add(lambda);
 	}
 	
@@ -31,6 +51,7 @@ public class CSwitch extends Switch {
 		lambdaSet = mapPortLambda.get(port);
 		if (lambdaSet == null)
 			return false;
+		System.out.println("CSfreeLambda:port" + port + "/lambda" + lambda);
 		return lambdaSet.remove(lambda);
 	}
 	
@@ -40,10 +61,11 @@ public class CSwitch extends Switch {
 		
 		lambdaSet = mapPortLambda.get(port);
 		if (lambdaSet == null)
-			return 0;
+			return 1;
 		int l = 1;
 		while (lambdaSet.contains(l))
 			l++;
+		System.out.println("CSgetLambda:port" + port + "/lambda" + l);
 		return l;
 	}
 	
@@ -54,6 +76,7 @@ public class CSwitch extends Switch {
 		lambdaSet = mapPortLambda.get(port);
 		if (lambdaSet == null)
 			return false;
+		System.out.println("CStestLambda:port" + port + "/lambda" + lambda);
 		return lambdaSet.contains(lambda);
 	}
 	

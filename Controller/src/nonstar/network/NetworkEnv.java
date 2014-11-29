@@ -4,12 +4,15 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
+import nonstar.basic.CSwitch;
 import nonstar.basic.Flow;
 import nonstar.basic.Link;
+import nonstar.basic.PSwitch;
 import nonstar.basic.Switch;
 import nonstar.interpreter.NetworkTopo;
 
 public class NetworkEnv implements NetworkTopo {
+	static int idLast = 0;
 	HashMap<Integer, Switch> mapIdSwitch;
 	HashMap<Link, Flow> mapLinkFlow;
 	
@@ -17,6 +20,24 @@ public class NetworkEnv implements NetworkTopo {
 		super();
 		mapIdSwitch = new HashMap<Integer, Switch>();
 		mapLinkFlow = new HashMap<Link, Flow>();
+	}
+	
+	public int addSwitch(Switch sw) {
+		if (mapIdSwitch.containsValue(sw))
+			return -1;
+		int id = idLast++;
+		System.out.println("NEaddSw:" + id + "/" + sw.toString());
+		sw.setId(id);
+		mapIdSwitch.put(id, sw);
+		return id;
+	}
+	
+	public boolean connectSwitch(Switch swL, int portL, Switch swR, int portR) {
+		if (!mapIdSwitch.containsValue(swL) || !mapIdSwitch.containsValue(swR))
+			return false;
+		swL.connectSwitch(portL, swR);
+		swR.connectSwitch(portR, swL);
+		return true;
 	}
 
 	@Override
@@ -30,10 +51,9 @@ public class NetworkEnv implements NetworkTopo {
 		Switch dstSw = mapIdSwitch.get(dst);
 		Set<Link> linkSet = mapLinkFlow.keySet();
 		
-		for (Link l : linkSet) {
+		for (Link l : linkSet)
 			if (l.isPeer(srcSw) && l.isPeer(dstSw))
 				return mapLinkFlow.get(l);
-		}
 		
 		return null;
 	}
@@ -60,10 +80,13 @@ public class NetworkEnv implements NetworkTopo {
 			}
 		}
 		
+		srcSw.allocLambda(srcPort, srcLambda);
 		newLink.setSwitch(srcSw, srcPort);
+		dstSw.allocLambda(dstPort, dstLambda);
 		newLink.setSwitch(dstSw, dstPort);
 		newLink.setLambda(srcLambda);
 		
+		System.out.println("establish:" + srcSw.toString() + "/" + srcPort + "=" + srcLambda + "=" + dstSw.toString() + "/" + dstPort);
 		return newLink;
 	}
 	
@@ -140,5 +163,41 @@ public class NetworkEnv implements NetworkTopo {
 		return flow;
 	}
 	
-
+	public static void main (String args[]) {
+		PSwitch swL1 = new PSwitch();
+		PSwitch swL2 = new PSwitch();
+		PSwitch swR1 = new PSwitch();
+		PSwitch swR2 = new PSwitch();
+		CSwitch sw11 = new CSwitch();
+		CSwitch sw12 = new CSwitch();
+		CSwitch sw21 = new CSwitch();
+		CSwitch sw22 = new CSwitch();
+		NetworkEnv netEnv = new NetworkEnv();
+		
+		netEnv.addSwitch(swL1);
+		netEnv.addSwitch(swL2);
+		netEnv.addSwitch(swR1);
+		netEnv.addSwitch(swR2);
+		
+		netEnv.addSwitch(sw11);
+		netEnv.addSwitch(sw12);
+		netEnv.addSwitch(sw21);
+		netEnv.addSwitch(sw22);
+		
+		netEnv.connectSwitch(swL1, 1, sw11, 1);
+		netEnv.connectSwitch(swL2, 1, sw21, 1);
+		netEnv.connectSwitch(swR1, 1, sw12, 1);
+		netEnv.connectSwitch(swR2, 1, sw22, 1);
+		netEnv.connectSwitch(sw11, 2, sw12, 2);
+		netEnv.connectSwitch(sw21, 2, sw22, 2);
+		netEnv.connectSwitch(sw11, 3, sw21, 3);
+		netEnv.connectSwitch(sw12, 3, sw22, 3);
+		netEnv.connectSwitch(sw11, 4, sw22, 4);
+		netEnv.connectSwitch(sw21, 4, sw12, 4);
+		
+		netEnv.setupCircuit(0, 2);
+		//System.out.println(netEnv.getCurrCircuit(0, 2));
+		netEnv.setupCircuit(1, 2);
+		netEnv.setupCircuit(2, 3);
+	}
 }
