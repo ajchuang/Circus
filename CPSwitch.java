@@ -12,14 +12,14 @@ import CircusCfg.*;
 public class CPSwitch extends CSwitch implements DebugInterface, DataPlaneHandler {
     
     CPTable m_cpTable;
-    
+    int switchId;
     public static void log (String s) {
         System.out.println ("[CPSwitch] " + s);
     }
-
+    
     public CPSwitch (int switchId) {
         super (switchId);
-        
+        this.switchId = switchId;
         /* CS-PS switching table */
         m_cpTable = new CPTable ();
         
@@ -33,6 +33,7 @@ public class CPSwitch extends CSwitch implements DebugInterface, DataPlaneHandle
         /* starting the PS server */
         new Thread (new PacketSwitchServer (pport, this)).start ();
     }
+    
     
     /* implement DebugInterface */
     public void processCmd (String cmd, PrintStream os) {
