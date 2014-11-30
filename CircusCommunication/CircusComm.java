@@ -244,4 +244,17 @@ public class CircusComm {
         return send (cco, oos);
     }
     
+    public static boolean send_unknown_packet (int sender, byte[] data, ObjectOutputStream oos) {
+        
+        if (oos != null) {
+            CircusCommObj cco = new CircusCommObj ();
+            cco.setMsgType (CircusCommConst.mtype_unknown_pkt);
+            cco.setSender (sender);
+            cco.setRawPacket (data);
+            return send (cco, oos);
+        }
+        
+        return false;
+    }
+    
 }

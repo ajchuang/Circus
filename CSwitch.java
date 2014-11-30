@@ -23,6 +23,7 @@ public class CSwitch implements DebugInterface, DataPlaneHandler {
     int dbg_port;
     InetAddress controladd;
     int controlport;
+    ObjectOutputStream m_cntChannel;
     
     HashMap<Integer, HashMap<Integer, HashMap<Integer, Properties>>> circuit_table;// keep all circuit information of this switch
     //(srcID, (length_in, (TDID, Properties(destID, length_out))))
@@ -196,10 +197,12 @@ public class CSwitch implements DebugInterface, DataPlaneHandler {
                     /* using object stream to retrieve the commobj */
                     ObjectOutputStream oos = new ObjectOutputStream (TCPsocket.getOutputStream ());
                     
+                    /* Yin-Gao */
+                    m_cntChannel = oos;
+                    
                     /* first thing to do: send power on */
                     CircusComm.txSysUp (selfID, CircusCommConst.msw_csSwitch, oos);
-                    
-                    ObjectInputStream ois = new ObjectInputStream (TCPsocket.getInputStream ());
+                    ObjectInputStream  ois = new ObjectInputStream (TCPsocket.getInputStream ());
                     
                     while (true) {
                         log ("start to wait server msg");
@@ -211,7 +214,11 @@ public class CSwitch implements DebugInterface, DataPlaneHandler {
                         }
                             
                         CircusCommObj cco = (CircusCommObj) obj; 
-                        parsecco(cco );
+                        if (parsecco (cco)) {
+                            CircusComm.txAck (selfID, cco.getMsgId(), oos);
+                        } else {
+                            CircusComm.txNack (selfID, cco.getMsgId(), oos);
+                        }
                         /* TODO: process the cco */
                     }
                 } catch (Exception e) {
@@ -224,8 +231,7 @@ public class CSwitch implements DebugInterface, DataPlaneHandler {
     	}
     }
     
-    
-    public void parsecco(CircusCommObj cco){
+    public boolean parsecco (CircusCommObj cco){
     	int msgtype = cco.getMsgType();
     	
     	int dstSw= cco.getDstSw();
@@ -234,7 +240,8 @@ public class CSwitch implements DebugInterface, DataPlaneHandler {
 		int outlambda= cco.getoutLambda();
 		int tdm_id= cco.getTdmId();
 		
-    	boolean result;
+    	boolean result = true;
+        
 		if(msgtype == CircusCommConst.mtype_setup_cs)
     		 result = insertcircuit(srcSw, inlambda, tdm_id, dstSw, outlambda);
 		
@@ -245,6 +252,8 @@ public class CSwitch implements DebugInterface, DataPlaneHandler {
     		if(removecircuit(srcSw, inlambda, tdm_id)){
     			insertcircuit(srcSw, inlambda, tdm_id, dstSw, outlambda);
     		}
+            
+        return result;
     }
     
     public class DebugServer implements Runnable {

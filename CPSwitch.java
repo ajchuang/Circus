@@ -9,7 +9,6 @@ import java.io.PrintStream;
 
 import CircusCommunication.*;
 import CircusCfg.*;
-import CircusCommunication.*;
 
 public class CPSwitch extends CSwitch implements DebugInterface, DataPlaneHandler {
     
@@ -107,30 +106,33 @@ public class CPSwitch extends CSwitch implements DebugInterface, DataPlaneHandle
     
     /* implement DataPlaneHandler */
     public void handlePsData (PPacket pp) {
+        
         log ("handle PS input");
-        /* TODO: PS to CS switching */
-    	Properties forward = m_cpTable.matchPS(pp);
-    	if(forward != null && forward.getProperty("swTo") != null){
-    		log ("SW"+switchId+"entry found while forwarding");
-    		CPacket pkt = new CPacket();
-    		pkt.setData(PPacket.pack(pp));
-    		pkt.setFromSw(switchId);
-    		pkt.setLambda(Integer.parseInt(forward.getProperty("lambda")));
-    		pkt.setTdmId(Integer.parseInt(forward.getProperty("tdmId")));
-    		pkt.setToSw(Integer.parseInt(forward.getProperty("swTo")));
+        
+    	Properties forward = m_cpTable.matchPS (pp);
+        
+    	if (forward != null && forward.getProperty("swTo") != null) {
+            log ("CPSwitch " + switchId + " delivered a CPacket");
+            
+    		CPacket pkt = new CPacket ();
+    		pkt.setData (PPacket.pack (pp));
+    		pkt.setFromSw (switchId);
+    		pkt.setLambda (Integer.parseInt (forward.getProperty ("lambda")));
+    		pkt.setTdmId (Integer.parseInt (forward.getProperty ("tdmId")));
+    		pkt.setToSw (Integer.parseInt (forward.getProperty ("swTo")));
     		CPacket.transmit (pkt);
-            Circus.log ("CPSwitch " + switchId + " delivered a CPacket");
-    	}else{
-    		log ("SW"+switchId+"ERROR: entry not found while forwarding!");
-            //forward to controller: new flow
+            
+    	} else {
+    		log ("SW " + switchId + " ERROR: entry not found while forwarding!");
+            CircusComm.send_unknown_packet (switchId, PPacket.pack (pp), m_cntChannel);
     	}
-        /* look up the table and determine where to go */
+
         return;
     }
     
     
     @Override
-    public void parsecco(CircusCommObj cco){
+    public boolean parsecco (CircusCommObj cco){
     	//        int swFrom;
         //        int lambda;
         //        int tdmId;
@@ -143,7 +145,7 @@ public class CPSwitch extends CSwitch implements DebugInterface, DataPlaneHandle
         //        InetAddress dstIp;
     	
     	int msgtype = cco.getMsgType();
-    	String dir = cco.getCPdir();
+    	String dir = cco.getCPdir().toUpperCase ();
     	Properties Srcinfo = new Properties();
     	Properties Dstinfo = new Properties();
     	
@@ -154,11 +156,9 @@ public class CPSwitch extends CSwitch implements DebugInterface, DataPlaneHandle
         String srcIp = cco.getSrcIp ();
         String dstIp = cco.getDstIp ();
         
-        if(cco.getSwType() == 0){
-        	parsecco_CS(cco);
-        }
-        
-        else if(msgtype == CircusCommConst.mtype_setup_ps ){
+        if (cco.getSwType() == 0) {
+        	return parsecco_CS (cco);
+        } else if(msgtype == CircusCommConst.mtype_setup_ps ){
     		
     		if(dir.equals("CP")){
     	        Srcinfo.setProperty("swFrom", inSw+"");
@@ -180,8 +180,9 @@ public class CPSwitch extends CSwitch implements DebugInterface, DataPlaneHandle
     			Dstinfo.setProperty("tdmId", tdm_id+"");
 
     	        m_cpTable.insertEntry( Srcinfo,  Dstinfo);
-    		}
-    		
+    		} else {
+                return false;
+            }
     	}
         
         else if(msgtype == CircusCommConst.mtype_remove_ps ){
@@ -195,9 +196,7 @@ public class CPSwitch extends CSwitch implements DebugInterface, DataPlaneHandle
     	        Dstinfo.setProperty("dstIp", dstIp);
 
     	        m_cpTable.removeEntry( Srcinfo);
-    		}
-    		
-    		else if(dir.equals("PC")){
+    		} else if (dir.equals("PC")){
     			Srcinfo.setProperty("srcIp", srcIp);
     	        Srcinfo.setProperty("dstIp", dstIp);
     	        
@@ -206,8 +205,9 @@ public class CPSwitch extends CSwitch implements DebugInterface, DataPlaneHandle
     			Dstinfo.setProperty("tdmId", tdm_id+"");
 
     	        m_cpTable.removeEntry( Srcinfo);
-    		}
-    		
+    		} else {
+                return false;
+            }
     	}
         
         else if(msgtype == CircusCommConst.mtype_modify_ps ){
@@ -224,6 +224,7 @@ public class CPSwitch extends CSwitch implements DebugInterface, DataPlaneHandle
     	        }
     	        else {
     	        	log ("Ooops: fail to reconfig");
+                    return false;
     	        }
     		}
     		
@@ -240,36 +241,37 @@ public class CPSwitch extends CSwitch implements DebugInterface, DataPlaneHandle
     	        }
     	        else {
     	        	log ("Ooops: fail to reconfig");
-    	        }    		}
-    		
+                    return false;
+    	        }    
+            }
     	}
-    	
+        
+        return true;
     }
     
-    public void parsecco_CS(CircusCommObj cco){
+    public boolean parsecco_CS (CircusCommObj cco) {
+        
     	int msgtype = cco.getMsgType();
-    	
     	int dstSw= cco.getDstSw();
 		int srcSw= cco.getSrcSw();
 		int inlambda= cco.getinLambda();
 		int outlambda= cco.getoutLambda();
 		int tdm_id= cco.getTdmId();
 		
-    	boolean result;
-		if(msgtype == CircusCommConst.mtype_setup_cs)
-    		 result = insertcircuit(srcSw, inlambda, tdm_id, dstSw, outlambda);
+    	boolean result = true;
 		
-    	else if(msgtype == CircusCommConst.mtype_teardown)
-    		 result = removecircuit(srcSw, inlambda, tdm_id);
-		
-    	else if(msgtype == CircusCommConst.mtype_reconfig)
-    		if(removecircuit(srcSw, inlambda, tdm_id)){
-    			insertcircuit(srcSw, inlambda, tdm_id, dstSw, outlambda);
+        if (msgtype == CircusCommConst.mtype_setup_cs) {
+    		 result = insertcircuit (srcSw, inlambda, tdm_id, dstSw, outlambda);
+    	} else if (msgtype == CircusCommConst.mtype_teardown) {
+    		 result = removecircuit (srcSw, inlambda, tdm_id);
+    	} else if (msgtype == CircusCommConst.mtype_reconfig) {
+    		if (removecircuit (srcSw, inlambda, tdm_id)) {
+    			insertcircuit (srcSw, inlambda, tdm_id, dstSw, outlambda);
     		}
+        }
+            
+        return result;
     }
-    
-    
-    
     
     /* inner class for ps switch */
     public class PacketSwitchServer implements Runnable {
@@ -282,7 +284,6 @@ public class CPSwitch extends CSwitch implements DebugInterface, DataPlaneHandle
             m_psPort = port;
             m_hdlr = hdlr;
         }
-        
         
         public void run () {
                 

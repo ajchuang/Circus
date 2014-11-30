@@ -9,6 +9,7 @@ public class CircusCommObj implements Serializable {
     int m_sender;
     int m_msgType;
     Properties m_param;
+    byte[] m_rawPkt;
     
     public CircusCommObj () {
         m_msgId = (int)(Math.random () * 65535);
@@ -75,6 +76,10 @@ public class CircusCommObj implements Serializable {
         setParam (CircusCommConst.mkey_swType, Integer.toString (type));
     }
     
+    public void setRawPacket (byte[] data) {
+        m_rawPkt = data;
+    }
+    
     /* getters */
     public int getSender () {
         return m_sender;
@@ -129,6 +134,10 @@ public class CircusCommObj implements Serializable {
     public String getCPdir () {
         String s = getParam (CircusCommConst.mkey_CPdir);
         return s;
+    }
+    
+    public byte[] getRawPacket () {
+        return m_rawPkt;
     }
     
     /* generic method for getting/setting params */
