@@ -1,3 +1,3 @@
 #!/bin/bash
-javac -cp './:../lib/CircusComm.jar' CircusTestController.java
-java -cp './:../lib/CircusComm.jar' CircusTestController 8888 8889
+javac -cp './:../lib/CircusCommunication.jar' CircusTestController.java
+java -cp './:../lib/CircusCommunication.jar' CircusTestController 8888 8889

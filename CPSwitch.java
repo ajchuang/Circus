@@ -8,6 +8,7 @@ import java.io.ObjectOutputStream;
 import java.io.PrintStream;
 
 import CircusCfg.*;
+import CircusCommunication.*;
 
 public class CPSwitch extends CSwitch implements DebugInterface, DataPlaneHandler {
     
