@@ -9,6 +9,8 @@ import java.nio.*;
 import java.nio.channels.*;
 
 import CircusCfg.*;
+import CircusCommunication.*;
+
 
 public class CSwitch implements DebugInterface, DataPlaneHandler {
 	final static String dest = "destID";
@@ -39,6 +41,7 @@ public class CSwitch implements DebugInterface, DataPlaneHandler {
     	controlport = cc.getCntlPort ();
     	selfudpport = cc.getSwPort (switchID);
         dbg_port    = cc.getSwDport (switchID);
+        circuit_table = new HashMap<Integer, HashMap<Integer, HashMap<Integer, Properties>>>();
         
         /* starting servers */
     	new Thread (new DataPlaneServer (this)).start();

@@ -7,6 +7,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.PrintStream;
 
+import CircusCommunication.*;
 import CircusCfg.*;
 
 public class CPSwitch extends CSwitch implements DebugInterface, DataPlaneHandler {
@@ -85,7 +86,7 @@ public class CPSwitch extends CSwitch implements DebugInterface, DataPlaneHandle
     /* implement DataPlaneHandler */
     public void handleCsData (CPacket cp) {
     	Properties forward = m_cpTable.matchCS(cp);
-    	if(!forward.getProperty("swTo").equals(null)){
+    	if(forward != null && forward.getProperty("swTo") != null){
     		cp.setFromSw(switchId);
     		cp.setLambda(Integer.parseInt(forward.getProperty("lambda")));
     		cp.setTdmId(Integer.parseInt(forward.getProperty("tdmId")));
@@ -93,7 +94,7 @@ public class CPSwitch extends CSwitch implements DebugInterface, DataPlaneHandle
     		CPacket.transmit (cp);
             Circus.log ("CPSwitch " + switchId + " delivered a CPacket");
     	}
-    	else if(!forward.getProperty("srcIp").equals(null)){
+    	else if(forward != null && forward.getProperty("srcIp") != null){
     		PPacket pkt = PPacket.unpack(cp.getData());
             Circus.log ("CPSwitch " + switchId + " End point pkt received: srcIP "+ pkt.getSrcIp() +" dstIP "+pkt.getDstIp() + " IPID " + pkt.getId());
     	}
@@ -105,9 +106,10 @@ public class CPSwitch extends CSwitch implements DebugInterface, DataPlaneHandle
     
     /* implement DataPlaneHandler */
     public void handlePsData (PPacket pp) {
+        log ("handle PS input");
         /* TODO: PS to CS switching */
     	Properties forward = m_cpTable.matchPS(pp);
-    	if(!forward.getProperty("swTo").equals(null)){
+    	if(forward != null && forward.getProperty("swTo") != null){
     		log ("SW"+switchId+"entry found while forwarding");
     		CPacket pkt = new CPacket();
     		pkt.setData(PPacket.pack(pp));
@@ -119,6 +121,7 @@ public class CPSwitch extends CSwitch implements DebugInterface, DataPlaneHandle
             Circus.log ("CPSwitch " + switchId + " delivered a CPacket");
     	}else{
     		log ("SW"+switchId+"ERROR: entry not found while forwarding!");
+            //forward to controller: new flow
     	}
         /* look up the table and determine where to go */
         return;
@@ -170,7 +173,7 @@ public class CPSwitch extends CSwitch implements DebugInterface, DataPlaneHandle
     		else if(dir.equals("PC")){
     			Srcinfo.setProperty("srcIp", srcIp);
     	        Srcinfo.setProperty("dstIp", dstIp);
-    	        
+    	        log ("srcIp : " + srcIp);
     			Dstinfo.setProperty("swTo", inSw+"");
     			Dstinfo.setProperty("lambda", lambda+"");
     			Dstinfo.setProperty("tdmId", tdm_id+"");

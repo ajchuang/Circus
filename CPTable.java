@@ -27,11 +27,25 @@ public class CPTable {
         		if(version.equals(prop.getProperty("version"))||true){
         			if(ipid.equals(prop.getProperty("ipid"))||true){
         				if(protocol.equals(prop.getProperty("protocol"))||true){
-        					if(srcIP.equals(prop.getProperty("srcIP"))){
-        						if(dstIP.equals(prop.getProperty("dstIP"))){
+        					
+                            Circus.log(srcIP + ":" + prop.getProperty ("srcIp"));
+                            
+                            try {
+								if (InetAddress.getByName (prop.getProperty ("srcIp")).toString ().equals (srcIP) &&
+								    InetAddress.getByName (prop.getProperty ("dstIp")).toString ().equals (dstIP))
+                                    return entry.Dstinfo;
+							} catch (Exception e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+								return null;
+							}
+                            /*
+                            if(srcIP.equals(prop.getProperty("srcIp"))){
+        						if(dstIP.equals(prop.getProperty("dstIp"))){
         							return entry.Dstinfo;
         						}
         					}
+                            */
         				}
         			}
         		}
