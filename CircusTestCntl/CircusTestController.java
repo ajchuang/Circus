@@ -10,8 +10,8 @@ import java.nio.channels.*;
 
 // cmd format: {cs_insert swId dstSw srcSw inlambda outlambda tdm_id}
 
-//cmd format: {PS_insert swId dir srcIp dstIp out/in_Sw lambda tdm_id}
-//dir can be CP or PC mean flow is from C2P or P2C
+//cmd format: {ps_insert swId dir srcIp dstIp out/in_Sw lambda tdm_id}
+//dir can be cp or pc mean flow is from C2P or P2C
 
 public class CircusTestController {
     
@@ -222,7 +222,7 @@ public class CircusTestController {
                 return;
             }
             
-            if(dir.equals("CP")){
+            if(dir.equals("cp")){
             if (CircusComm.txAddEntry_ps_C2P ( srcIp,  dstIp,  inoutSw,  lambda,  tdmId,  oos) )
                 out.println ("OK");
             else
@@ -231,7 +231,7 @@ public class CircusTestController {
             return;
             }
             
-            else if(dir.equals("PC")){
+            else if(dir.equals("pc")){
                 if (CircusComm.txAddEntry_ps_P2C ( srcIp,  dstIp,  inoutSw,  lambda,  tdmId,  oos))
                     out.println ("OK");
                 else
