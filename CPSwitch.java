@@ -83,7 +83,19 @@ public class CPSwitch extends CSwitch implements DebugInterface, DataPlaneHandle
     
     /* implement DataPlaneHandler */
     public void handleCsData (CPacket cp) {
-        
+    	Properties forward = m_cpTable.matchCS(cp);
+    	if(!forward.getProperty("swTo").equals(null)){
+    		cp.setFromSw(switchId);
+    		cp.setLambda(Integer.parseInt(forward.getProperty("lambda")));
+    		cp.setTdmId(Integer.parseInt(forward.getProperty("tdmId")));
+    		cp.setToSw(Integer.parseInt(forward.getProperty("swTo")));
+    		CPacket.transmit (cp);
+            Circus.log ("CPSwitch " + switchId + " delivered a CPacket");
+    	}
+    	else if(!forward.getProperty("srcIp").equals(null)){
+    		PPacket pkt = PPacket.unpack(cp.getData());
+            Circus.log ("CPSwitch " + switchId + " End point pkt received: srcIP "+ pkt.getSrcIp() +" dstIP "+pkt.getDstIp() + " IPID " + pkt.getId());
+    	}
         /* TODO */
         /* check if we need to transform to PS first */
         /* check if we need to further pass data to next switch */
@@ -93,10 +105,23 @@ public class CPSwitch extends CSwitch implements DebugInterface, DataPlaneHandle
     /* implement DataPlaneHandler */
     public void handlePsData (PPacket pp) {
         /* TODO: PS to CS switching */
+    	Properties forward = m_cpTable.matchPS(pp);
+    	if(!forward.getProperty("swTo").equals(null)){
+    		log ("SW"+switchId+"entry found while forwarding");
+    		CPacket pkt = new CPacket();
+    		pkt.setData(PPacket.pack(pp));
+    		pkt.setFromSw(switchId);
+    		pkt.setLambda(Integer.parseInt(forward.getProperty("lambda")));
+    		pkt.setTdmId(Integer.parseInt(forward.getProperty("tdmId")));
+    		pkt.setToSw(Integer.parseInt(forward.getProperty("swTo")));
+    		CPacket.transmit (pkt);
+            Circus.log ("CPSwitch " + switchId + " delivered a CPacket");
+    	}else{
+    		log ("SW"+switchId+"ERROR: entry not found while forwarding!");
+    	}
         /* look up the table and determine where to go */
         return;
     }
-    
     
     
     @Override
