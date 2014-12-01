@@ -2,6 +2,7 @@ package nonstar.network;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 import nonstar.basic.CSwitch;
@@ -133,13 +134,50 @@ public class NetworkEnv implements NetworkTopo {
 		Switch tmpSw = dstSw;
 		Flow flow = new Flow();
 		while (swPrev.get(tmpSw) != null) {
-			flow.addLink(establishLink(swPrev.get(tmpSw), tmpSw));
+			flow.addLinkFirst(establishLink(swPrev.get(tmpSw), tmpSw));
+			flow.addSwFirst(tmpSw);
 			tmpSw = swPrev.get(tmpSw);
 		}
+		flow.addSwFirst(tmpSw);
 		
 		return flow;
 	}
-
+	
+	private boolean walkFlow(Switch srcSw, Switch dstSw, Flow flow) {
+		Iterator<Switch> iterSw = flow.getSwIter();
+		Iterator<Link> iterLink = flow.getLinkIter();
+		Link LinkIn = null, LinkOut = null;
+		Switch tmpSw = null;
+		
+		while (iterSw.hasNext()) {
+			tmpSw = iterSw.next();
+			System.out.print(tmpSw + "=>");
+			if (tmpSw == srcSw) {
+				System.out.print("Setup in PSwitch:");
+				if (iterLink.hasNext())
+					LinkOut = iterLink.next();
+				else
+					System.out.println("Fatal error");
+				System.out.println("outport " + LinkOut.getPort(tmpSw) + "/lambda " + LinkOut.getLambda());
+			} else if (tmpSw == dstSw) {
+				System.out.print("Setup out PSwitch:");
+				LinkIn = LinkOut;
+				System.out.println("inport " + LinkIn.getPort(tmpSw) + "/lambda " + LinkIn.getLambda());
+			} else {
+				System.out.print("Setup CSwitch:");
+				LinkIn = LinkOut;
+				if (iterLink.hasNext())
+					LinkOut = iterLink.next();
+				else
+					System.out.println("Fatal error");
+				System.out.print("inport " + LinkIn.getPort(tmpSw) + "/lambda " + LinkIn.getLambda());
+				System.out.println(";outport " + LinkOut.getPort(tmpSw) + "/lambda " + LinkOut.getLambda());
+			}
+		}
+		
+		return true;
+	}
+	
 	@Override
 	public Flow setupCircuit(int src, int dst) {
 		// TODO Auto-generated method stub
@@ -159,6 +197,9 @@ public class NetworkEnv implements NetworkTopo {
 			newLink.setSwitch(dstSw, -1);
 			mapLinkFlow.put(newLink, flow);
 		}
+		
+		/* Send control messages */
+		walkFlow(srcSw, dstSw, flow);
 		
 		return flow;
 	}
