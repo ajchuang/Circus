@@ -25,6 +25,10 @@ public class Link {
 		lambda = l;
 	}
 	
+	public int getLambda() {
+		return lambda;
+	}
+	
 	public int getPort(Switch sw) {
 		if (mapSwPort.containsKey(sw))
 			return mapSwPort.get(sw);

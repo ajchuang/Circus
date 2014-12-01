@@ -7,6 +7,7 @@ import java.util.Set;
 public class CSwitch extends Switch {
 	public CSwitch() {
 		super();
+		id = -1;
 		mapPortSwitch = new HashMap<Integer, Switch>();
 		mapSwitchPort = new HashMap<Switch, Integer>();
 		mapPortLambda = new HashMap<Integer, HashSet<Integer>>();
@@ -15,6 +16,10 @@ public class CSwitch extends Switch {
 	@Override
 	public void setId(int swId) {
 		id = swId;
+	}
+	
+	public int getId() {
+		return id;
 	}
 	
 	public String toString() {

@@ -13,6 +13,10 @@ public abstract class Switch {
 	public void setId(int swId) {
 	}
 	
+	public int getId() {
+		return -1;
+	}
+	
 	public boolean connectSwitch(int port, Switch sw) {
 		return false;
 	}
