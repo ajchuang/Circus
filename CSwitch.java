@@ -8,6 +8,7 @@ import java.util.*;
 import java.nio.*;
 import java.nio.channels.*;
 
+import CircusPPacket.*;
 import CircusCfg.*;
 import CircusCommunication.*;
 

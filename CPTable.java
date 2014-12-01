@@ -4,6 +4,8 @@ import java.util.Properties;
 import java.net.InetAddress;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import CircusPPacket.*;
+
 /*This is used to store entries of flows in CPswitches*/
 public class CPTable {
     
