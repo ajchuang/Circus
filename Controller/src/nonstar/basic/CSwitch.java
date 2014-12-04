@@ -1,16 +1,18 @@
 package nonstar.basic;
 
+import java.io.ObjectOutputStream;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
 public class CSwitch extends Switch {
-	public CSwitch() {
+	public CSwitch(ObjectOutputStream oos) {
 		super();
 		id = -1;
 		mapPortSwitch = new HashMap<Integer, Switch>();
 		mapSwitchPort = new HashMap<Switch, Integer>();
 		mapPortLambda = new HashMap<Integer, HashSet<Integer>>();
+		objOutStream = oos;
 	}
 	
 	@Override
@@ -98,5 +100,9 @@ public class CSwitch extends Switch {
 	@Override
 	public int getOutputPort(Switch tgtSw) {
 		return mapSwitchPort.get(tgtSw);
+	}
+	
+	public ObjectOutputStream getObjOutStream() {
+		return objOutStream;
 	}
 }
