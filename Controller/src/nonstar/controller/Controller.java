@@ -108,6 +108,10 @@ public class Controller {
                         
                         /* terminate this thread */
                         return;
+                    } else if (msg == CircusCommConst.mtype_ack) {
+                    	log("Processing ack from " + cco.getSender());
+                    } else if (msg == CircusCommConst.mtype_nack) {
+                    	log("Processing nack from " + cco.getSender());
                     } else {
                     	nEnv.processCommObj(cco);
                     }

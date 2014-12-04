@@ -7,8 +7,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.Vector;
 
-import CircusCfg.CircusConfig;
 import CircusCommunication.CircusComm;
 import CircusCommunication.CircusCommConst;
 import CircusCommunication.CircusCommObj;
@@ -24,12 +24,17 @@ public class NetworkEnv implements NetworkTopo {
 	static int idLast = 0;
 	HashMap<Integer, Switch> mapIdSwitch;
 	HashMap<Link, Flow> mapLinkFlow;
-	CircusConfig netCfg;
+	HashMap<Switch, HashMap<Integer, Integer>> mapSwPortSwId;
+	
+	public static void log (String s) {
+	        System.out.println ("[NetEnv] " + s);
+	    }
 	
 	public NetworkEnv() {
 		super();
 		mapIdSwitch = new HashMap<Integer, Switch>();
 		mapLinkFlow = new HashMap<Link, Flow>();
+		mapSwPortSwId = new HashMap<Switch, HashMap<Integer, Integer>>();
 	}
 	
 	public synchronized boolean addSwitch(CircusCommObj cco, ObjectOutputStream oos) {
@@ -39,6 +44,8 @@ public class NetworkEnv implements NetworkTopo {
 			return false;
 		
 		Switch sw;
+		Vector<Integer> list;
+		HashMap<Integer, Integer> mapPortSwId;
 		
 		if (cco.getSwType() == CircusCommConst.msw_pcSwitch)
 			sw = new PSwitch(oos);
@@ -47,6 +54,29 @@ public class NetworkEnv implements NetworkTopo {
 		
 		sw.setId(cco.getSender());
 		mapIdSwitch.put(cco.getSender(), sw);
+		
+		/* Store switch connection map */
+		list = cco.getConnMap();
+		mapPortSwId = new HashMap<Integer, Integer>();
+		for (int i = 0; i < list.size(); i++) {
+			int nbrSwId = list.get(i);
+			if (nbrSwId < 0)
+				continue;
+			mapPortSwId.put(i, nbrSwId);
+			Switch nbrSw = mapIdSwitch.get(nbrSwId);
+			if (nbrSw != null) {
+				HashMap<Integer, Integer> nbrPortMap = mapSwPortSwId.get(nbrSw);
+				Iterator<Integer> iter = nbrPortMap.keySet().iterator();
+				while (iter.hasNext()) {
+					int nbrPort = iter.next();
+					Switch inverseSw = mapIdSwitch.get(nbrPortMap.get(nbrPort));
+					if (inverseSw == sw) {
+						connectSwitch(sw, i, nbrSw, nbrPort);
+					}
+				}
+			}
+		}
+		mapSwPortSwId.put(sw, mapPortSwId);
 		
 		return true;
 	}
@@ -69,6 +99,7 @@ public class NetworkEnv implements NetworkTopo {
 				return false;
 			}
 		} else {
+			log("The Switch is not a PSwitch");
 			return false;
 		}
 	}
@@ -101,6 +132,7 @@ public class NetworkEnv implements NetworkTopo {
 		
 		switch (cco.getMsgType()) {
 		case CircusCommConst.mtype_unknown_pkt:
+			log("Handling unknown packet");
 			Switch srcSw = mapIdSwitch.get(cco.getSender());
 			PPacket ppkt = PPacket.unpack(cco.getRawPacket());
 			Switch dstSw = getSwitchByIp(ppkt.getDstIp());
@@ -118,11 +150,10 @@ public class NetworkEnv implements NetworkTopo {
 		return true;
 	}
 	
-	public int addSwitch(Switch sw) {
+	public int addSwitch(int id, Switch sw) {
 		if (mapIdSwitch.containsValue(sw))
 			return -1;
-		int id = idLast++;
-		System.out.println("NEaddSw:" + id + "/" + sw.toString());
+		log("NEaddSw:" + id + "/" + sw.toString());
 		sw.setId(id);
 		mapIdSwitch.put(id, sw);
 		return id;
@@ -148,7 +179,7 @@ public class NetworkEnv implements NetworkTopo {
 		Set<Link> linkSet = mapLinkFlow.keySet();
 		
 		for (Link l : linkSet)
-			if (l.isPeer(srcSw) && l.isPeer(dstSw))
+			if (l.isSource(srcSw) && l.isDestination(dstSw))
 				return mapLinkFlow.get(l);
 		
 		return null;
@@ -182,7 +213,7 @@ public class NetworkEnv implements NetworkTopo {
 		newLink.setSwitch(dstSw, dstPort);
 		newLink.setLambda(srcLambda);
 		
-		System.out.println("establish:" + srcSw.toString() + "/" + srcPort + "=" + srcLambda + "=" + dstSw.toString() + "/" + dstPort);
+		log("establish:" + srcSw.toString() + "/" + srcPort + "=" + srcLambda + "=" + dstSw.toString() + "/" + dstPort);
 		return newLink;
 	}
 	
@@ -252,7 +283,7 @@ public class NetworkEnv implements NetworkTopo {
 				if (iterLink.hasNext())
 					LinkOut = iterLink.next();
 				else
-					System.out.println("Fatal error");
+					log("Fatal error");
 				System.out.println("outport " + LinkOut.getPort(tmpSw) + "/lambda " + LinkOut.getLambda());
 			} else if (tmpSw == dstSw) {
 				System.out.print("Setup out PSwitch:");
@@ -264,7 +295,7 @@ public class NetworkEnv implements NetworkTopo {
 				if (iterLink.hasNext())
 					LinkOut = iterLink.next();
 				else
-					System.out.println("Fatal error");
+					log("Fatal error");
 				System.out.print("inport " + LinkIn.getPort(tmpSw) + "/lambda " + LinkIn.getLambda());
 				System.out.println(";outport " + LinkOut.getPort(tmpSw) + "/lambda " + LinkOut.getLambda());
 			}
@@ -289,7 +320,7 @@ public class NetworkEnv implements NetworkTopo {
 				if (iterLink.hasNext())
 					LinkOut = iterLink.next();
 				else
-					System.out.println("Fatal error");
+					log("Fatal error");
 				System.out.println("outport " + LinkOut.getPort(tmpSw) + "/lambda " + LinkOut.getLambda());
 				CircusComm.txAddEntry_ps_P2C(srcIp.toString(), dstIp.toString(),
 						tmpSw.getNeighborSwitch(LinkOut.getPort(tmpSw)).getId(),
@@ -307,7 +338,7 @@ public class NetworkEnv implements NetworkTopo {
 				if (iterLink.hasNext())
 					LinkOut = iterLink.next();
 				else
-					System.out.println("Fatal error");
+					log("Fatal error");
 				System.out.print("inport " + LinkIn.getPort(tmpSw) + "/lambda " + LinkIn.getLambda());
 				System.out.println(";outport " + LinkOut.getPort(tmpSw) + "/lambda " + LinkOut.getLambda());
 				CircusComm.txSetup_cs(
@@ -328,6 +359,8 @@ public class NetworkEnv implements NetworkTopo {
 		Switch srcSw, dstSw;
 		Flow flow;
 		
+		log("setupCircuit: " + srcIp + "=>" + dstIp);
+		
 		try {
 			src = InetAddress.getByName(srcIp);
 			dst = InetAddress.getByName(dstIp);
@@ -341,6 +374,8 @@ public class NetworkEnv implements NetworkTopo {
 						walkFlow(src, dst, flow);
 					}
 				}
+			} else {
+				log("Cannot find src/dst Switch by IP");
 			}
 		} catch (UnknownHostException e) {
 			// TODO Auto-generated catch block
@@ -363,13 +398,13 @@ public class NetworkEnv implements NetworkTopo {
 		Flow flow = getFlow(srcSw, dstSw);
 		if (flow != null) {
 			Link newLink = new Link();
-			newLink.setSwitch(srcSw, -1);
-			newLink.setSwitch(dstSw, -1);
+			newLink.setSource(srcSw);
+			newLink.setDestination(dstSw);
 			mapLinkFlow.put(newLink, flow);
 		}
 		
 		/* Send control messages */
-		walkFlow(srcSw, dstSw, flow);
+		//walkFlow(srcSw, dstSw, flow);
 		
 		return flow;
 	}

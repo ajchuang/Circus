@@ -44,7 +44,7 @@ public class PSwitch extends Switch {
 	public boolean connectSwitch(int port, Switch sw) {
 		if (mapPortSwitch.containsKey(port) || mapSwitchPort.containsKey(sw))
 			return false;
-		System.out.println("PSconnectSw:" + sw.toString() + "/port" + port);
+		System.out.println(this + "PSconnectSw:" + sw.toString() + "/port" + port);
 		mapPortSwitch.put(port, sw);
 		mapSwitchPort.put(sw, port);
 		return true;
