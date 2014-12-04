@@ -175,7 +175,7 @@ public class CircusConfig {
         int pcnt = Integer.parseInt (prop.getProperty (m_propPortCnt));
         
         for (int i=0; i<pcnt; i++) {
-            String key = m_propPortNum + (i + 1);
+            String key = m_propPortNum + i;
             int c = Integer.parseInt (prop.getProperty (key));
             vec.add (Integer.valueOf (c));
         }
