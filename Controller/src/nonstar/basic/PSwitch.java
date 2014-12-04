@@ -1,16 +1,30 @@
 package nonstar.basic;
 
+import java.io.ObjectOutputStream;
+import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
 public class PSwitch extends Switch {
-	public PSwitch() {
+	HashSet<InetAddress> connectedIp;
+	
+	public PSwitch(ObjectOutputStream oos) {
 		super();
 		id = -1;
 		mapPortSwitch = new HashMap<Integer, Switch>();
 		mapSwitchPort = new HashMap<Switch, Integer>();
 		mapPortLambda = new HashMap<Integer, HashSet<Integer>>();
+		objOutStream = oos;
+		connectedIp = new HashSet<InetAddress>();
+	}
+	
+	public boolean addIp(InetAddress ip) {
+		return connectedIp.add(ip);
+	}
+	
+	public boolean connectedToIp(InetAddress ip) {
+		return connectedIp.contains(ip);
 	}
 	
 	@Override
@@ -98,5 +112,9 @@ public class PSwitch extends Switch {
 	@Override
 	public int getOutputPort(Switch tgtSw) {
 		return mapSwitchPort.get(tgtSw);
+	}
+	
+	public ObjectOutputStream getObjOutStream () {
+		return objOutStream;
 	}
 }

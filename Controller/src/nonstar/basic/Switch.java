@@ -1,5 +1,6 @@
 package nonstar.basic;
 
+import java.io.ObjectOutputStream;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
@@ -9,6 +10,7 @@ public abstract class Switch {
 	HashMap<Integer, Switch> mapPortSwitch;
 	HashMap<Switch, Integer> mapSwitchPort;
 	HashMap<Integer, HashSet<Integer>> mapPortLambda;
+	ObjectOutputStream objOutStream;
 	
 	public void setId(int swId) {
 	}
@@ -47,5 +49,9 @@ public abstract class Switch {
 	
 	public int getOutputPort(Switch tgtSw) {
 		return -1;
+	}
+	
+	public ObjectOutputStream getObjOutStream() {
+		return null;
 	}
 }
