@@ -12,7 +12,6 @@ import CircusPPacket.*;
 import CircusCfg.*;
 import CircusCommunication.*;
 
-
 public class CSwitch implements DebugInterface, DataPlaneHandler {
 	final static String dest = "destID";
     final static String length = "length";
@@ -203,6 +202,7 @@ public class CSwitch implements DebugInterface, DataPlaneHandler {
                     
                     /* first thing to do: send power on */
                     CircusComm.txSysUp (selfID, CircusCommConst.msw_csSwitch, oos);
+                    
                     ObjectInputStream  ois = new ObjectInputStream (TCPsocket.getInputStream ());
                     
                     while (true) {

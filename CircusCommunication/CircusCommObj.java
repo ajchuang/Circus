@@ -2,6 +2,7 @@ package CircusCommunication;
 
 import java.io.*;
 import java.util.Properties;
+import java.util.Vector;
 
 public class CircusCommObj implements Serializable {
     
@@ -10,10 +11,12 @@ public class CircusCommObj implements Serializable {
     int m_msgType;
     Properties m_param;
     byte[] m_rawPkt;
+    Vector<Integer> m_connMap;
     
     public CircusCommObj () {
         m_msgId = (int)(Math.random () * 65535);
         m_param = new Properties ();
+        m_connMap = new Vector<Integer> ();
     }
     
     public String toString () {
@@ -33,6 +36,10 @@ public class CircusCommObj implements Serializable {
     /* setMsgId should only be called for ack/nack */
     public void setMsgId (int id) {
         m_msgId = id;
+    }
+    
+    public void setConnMap (Vector<Integer> v) {
+        m_connMap.addAll (v);
     }
     
     public void setMsgType (int type) {
@@ -138,6 +145,10 @@ public class CircusCommObj implements Serializable {
     
     public byte[] getRawPacket () {
         return m_rawPkt;
+    }
+    
+    public Vector<Integer> getConnMap () {
+        return m_connMap;
     }
     
     /* generic method for getting/setting params */

@@ -3,6 +3,8 @@ package CircusCommunication;
 import java.net.Socket;
 import java.io.ObjectOutputStream;
 
+import CircusCfg.*;
+
 public class CircusComm {
     
     static void log (String s) {
@@ -30,6 +32,7 @@ public class CircusComm {
         cco.setMsgType (CircusCommConst.mtype_sysup);
         cco.setSender (swId);
         cco.setSwType (swType);
+        cco.setConnMap (CircusConfig.getConfig().getSwConnMap (swId));
         return send (cco, oos);
     }
     

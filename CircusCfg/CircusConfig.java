@@ -3,6 +3,7 @@ package CircusCfg;
 import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.Properties;
+import java.util.Vector;
 
 public class CircusConfig {
 
@@ -162,6 +163,24 @@ public class CircusConfig {
         
         Properties p = m_swList.get (iid);
         return Integer.parseInt (p.getProperty (m_propPSport));
+    }
+    
+    /* get connection map of a certain switch */
+    public Vector<Integer> getSwConnMap (int sid) {
+        
+        Vector<Integer> vec = new Vector<Integer> (); 
+        Integer iid = Integer.valueOf (sid);
+        Properties prop = m_swCfg.get (iid);
+        
+        int pcnt = Integer.parseInt (prop.getProperty (m_propPortCnt));
+        
+        for (int i=0; i<pcnt; i++) {
+            String key = m_propPortNum + (i + 1);
+            int c = Integer.parseInt (prop.getProperty (key));
+            vec.add (Integer.valueOf (c));
+        }
+        
+        return vec;
     }
     
     /* add switch port count config */
