@@ -25,6 +25,7 @@ public class CSwitch implements DebugInterface, DataPlaneHandler {
     int controlport;
     ObjectOutputStream m_cntChannel;
     
+    
     HashMap<Integer, HashMap<Integer, HashMap<Integer, Properties>>> circuit_table;// keep all circuit information of this switch
     //(srcID, (length_in, (TDID, Properties(destID, length_out))))
     
@@ -201,7 +202,10 @@ public class CSwitch implements DebugInterface, DataPlaneHandler {
                     m_cntChannel = oos;
                     
                     /* first thing to do: send power on */
-                    CircusComm.txSysUp (selfID, CircusCommConst.msw_csSwitch, oos);
+                    int swType;
+                    CircusConfig cc = CircusConfig.getConfig ();
+                    swType = cc.getDualState (selfID) ? CircusCommConst.msw_pcSwitch:CircusCommConst.msw_csSwitch;
+                    CircusComm.txSysUp (selfID, swType, oos);
                     
                     ObjectInputStream  ois = new ObjectInputStream (TCPsocket.getInputStream ());
                     
