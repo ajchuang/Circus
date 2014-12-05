@@ -52,7 +52,7 @@ public class CSwitch implements DebugInterface, DataPlaneHandler {
     }
     
     public boolean insertcircuit(int srcID, int inlength, int TDID, int destID, int outlength){
-        log ("Switch " + selfID + " inserting circuit from" +srcID +" to "+destID);
+        log ("Switch " + selfID + " inserting circuit from " +srcID +" to "+destID);
         
         HashMap<Integer, HashMap<Integer, Properties>> src_table = circuit_table.get(srcID);
         if (src_table == null) {
@@ -62,7 +62,7 @@ public class CSwitch implements DebugInterface, DataPlaneHandler {
         HashMap<Integer, Properties> wlength_table = src_table.get(inlength);
         if (wlength_table == null) {
         	wlength_table = new HashMap<Integer, Properties>();
-        	src_table.put(srcID, wlength_table);
+        	src_table.put(inlength, wlength_table);
         }
         Properties destinfo = wlength_table.get(TDID);
         if (destinfo == null){
@@ -111,9 +111,15 @@ public class CSwitch implements DebugInterface, DataPlaneHandler {
     		return false;
     	}
         HashMap<Integer, HashMap<Integer, Properties>> src_table = circuit_table.get(swtichfrom);
+        if(src_table == null){
+            Circus.log ("Switch " + selfID + " Error: src not found" );
+            return false;
+        }
         HashMap<Integer, Properties> wlength_table = src_table.get(length);
-        if(wlength_table == null)
-            Circus.log ("Switch " + selfID + "Error: lambda not found" );
+        if(wlength_table == null){
+            Circus.log ("Switch " + selfID + " Error: lambda not found" );
+            return false;
+        }
         Properties destinfo = wlength_table.get(TDID);
         if (destinfo ==  null){// if flow can not be found
             Circus.log ("Switch " + selfID + "Error: flow not found" );
