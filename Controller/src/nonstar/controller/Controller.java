@@ -273,7 +273,6 @@ public class Controller {
             } else if (cmd.startsWith("h_connect")) {
             	connectHost(cmd, out);
             }
-            
         }
         
         public void run () {
