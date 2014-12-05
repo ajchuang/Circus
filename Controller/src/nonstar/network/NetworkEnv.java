@@ -312,6 +312,8 @@ public class NetworkEnv implements NetworkTopo {
 		Switch srcSw = getSwitchByIp(srcIp);
 		Switch dstSw = getSwitchByIp(dstIp);
 		
+		log("walkFlow from " + srcIp.toString() + " to " + dstIp.toString());
+		
 		while (iterSw.hasNext()) {
 			tmpSw = iterSw.next();
 			System.out.print(tmpSw + "=>");
@@ -322,14 +324,14 @@ public class NetworkEnv implements NetworkTopo {
 				else
 					log("Fatal error");
 				System.out.println("outport " + LinkOut.getPort(tmpSw) + "/lambda " + LinkOut.getLambda());
-				CircusComm.txAddEntry_ps_P2C(srcIp.toString(), dstIp.toString(),
+				CircusComm.txAddEntry_ps_P2C(srcIp.getHostAddress(), dstIp.getHostAddress(),
 						tmpSw.getNeighborSwitch(LinkOut.getPort(tmpSw)).getId(),
 						LinkOut.getLambda(), 1, tmpSw.getObjOutStream());
 			} else if (tmpSw == dstSw) {
 				System.out.print("Setup out PSwitch:");
 				LinkIn = LinkOut;
 				System.out.println("inport " + LinkIn.getPort(tmpSw) + "/lambda " + LinkIn.getLambda());
-				CircusComm.txAddEntry_ps_C2P(srcIp.toString(), dstIp.toString(),
+				CircusComm.txAddEntry_ps_C2P(srcIp.getHostAddress(), dstIp.getHostAddress(),
 						tmpSw.getNeighborSwitch(LinkIn.getPort(tmpSw)).getId(),
 						LinkIn.getLambda(), 1, tmpSw.getObjOutStream());
 			} else {
@@ -342,8 +344,8 @@ public class NetworkEnv implements NetworkTopo {
 				System.out.print("inport " + LinkIn.getPort(tmpSw) + "/lambda " + LinkIn.getLambda());
 				System.out.println(";outport " + LinkOut.getPort(tmpSw) + "/lambda " + LinkOut.getLambda());
 				CircusComm.txSetup_cs(
-						tmpSw.getNeighborSwitch(LinkIn.getPort(tmpSw)).getId(),
 						tmpSw.getNeighborSwitch(LinkOut.getPort(tmpSw)).getId(),
+						tmpSw.getNeighborSwitch(LinkIn.getPort(tmpSw)).getId(),
 						LinkIn.getLambda(),
 						LinkOut.getLambda(),
 						1,
