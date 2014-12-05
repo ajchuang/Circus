@@ -112,6 +112,8 @@ public class CSwitch implements DebugInterface, DataPlaneHandler {
     	}
         HashMap<Integer, HashMap<Integer, Properties>> src_table = circuit_table.get(swtichfrom);
         HashMap<Integer, Properties> wlength_table = src_table.get(length);
+        if(wlength_table == null)
+            Circus.log ("Switch " + selfID + "Error: lambda not found" );
         Properties destinfo = wlength_table.get(TDID);
         if (destinfo ==  null){// if flow can not be found
             Circus.log ("Switch " + selfID + "Error: flow not found" );
@@ -139,6 +141,8 @@ public class CSwitch implements DebugInterface, DataPlaneHandler {
     
     /* implement DataPlaneHandler */
     public void handleCsData (CPacket cp) {
+            Circus.log ("Switch " + selfID + " received a pkt.");
+
         /* do CS switching procedures */
         if (updatepkt (cp) == true) {
             //deliver pkt!!!
