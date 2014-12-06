@@ -299,7 +299,8 @@ public class CSwitch implements DebugInterface, DataPlaneHandler {
                     OutputStream os = sc.getOutputStream ();
                     BufferedReader br = new BufferedReader (new InputStreamReader (is));
                     PrintStream out = new PrintStream (os);
-                    
+                    out.print ("[Debug @sw " + selfID + "]");
+
                     /* the string ref for command input */
                     String cmd;
                     
@@ -314,6 +315,9 @@ public class CSwitch implements DebugInterface, DataPlaneHandler {
                         /* parsing commands, and do something here */
                         CSwitch.log (cmd);
                         m_dif.processCmd (cmd, out);
+                        
+                        /* print the input prompt */
+                        out.print ("[Debug @sw " + selfID + "]");
                     }
                     
                     /* clean up */
