@@ -13,8 +13,10 @@ import CircusCfg.*;
 
 public class CPSwitch extends CSwitch implements DebugInterface, DataPlaneHandler {
     
+    /* data members */
     CPTable m_cpTable;
     int switchId;
+    
     public static void log (String s) {
         System.out.println ("[CPSwitch] " + s);
     }
@@ -22,6 +24,7 @@ public class CPSwitch extends CSwitch implements DebugInterface, DataPlaneHandle
     public CPSwitch (int switchId) {
         super (switchId);
         this.switchId = switchId;
+        
         /* CS-PS switching table */
         m_cpTable = new CPTable ();
         
@@ -131,6 +134,23 @@ public class CPSwitch extends CSwitch implements DebugInterface, DataPlaneHandle
         return;
     }
     
+    /*  this method is used to send data to myself -
+        just to simplify the process of resend data.
+     */
+    boolean send_data_to_myself (InetAddress adr, int port, byte[] data) {
+        try {
+            DatagramSocket socket = new DatagramSocket();
+            DatagramPacket packet = new DatagramPacket (data, data.length, adr, port);
+            socket.send (packet);
+            socket.close ();
+        } catch (Exception e) {
+            log ("oops: " + e);
+            return false;
+        }
+        
+        return true;
+    } 
+    
     
     @Override
     public boolean parsecco (CircusCommObj cco){
@@ -159,9 +179,9 @@ public class CPSwitch extends CSwitch implements DebugInterface, DataPlaneHandle
         
         if (cco.getSwType() == 0) {
         	return parsecco_CS (cco);
-        } else if(msgtype == CircusCommConst.mtype_setup_ps ){
+        } else if (msgtype == CircusCommConst.mtype_setup_ps) {
     		
-    		if(dir.equals("CP")){
+    		if (dir.equals("CP")) {
     	        Srcinfo.setProperty("swFrom", inSw+"");
     	        Srcinfo.setProperty("lambda", lambda+"");
     	        Srcinfo.setProperty("tdmId", tdm_id+"");
@@ -172,7 +192,7 @@ public class CPSwitch extends CSwitch implements DebugInterface, DataPlaneHandle
     	        m_cpTable.insertEntry( Srcinfo,  Dstinfo);
     		}
     		
-    		else if(dir.equals("PC")){
+    		else if (dir.equals("PC")) {
     			Srcinfo.setProperty("srcIp", srcIp);
     	        Srcinfo.setProperty("dstIp", dstIp);
     	        log ("srcIp : " + srcIp);
@@ -186,7 +206,7 @@ public class CPSwitch extends CSwitch implements DebugInterface, DataPlaneHandle
             }
     	}
         
-        else if(msgtype == CircusCommConst.mtype_remove_ps ){
+        else if (msgtype == CircusCommConst.mtype_remove_ps) {
     		
     		if(dir.equals("CP")){
     	        Srcinfo.setProperty("swFrom", inSw+"");
@@ -211,7 +231,7 @@ public class CPSwitch extends CSwitch implements DebugInterface, DataPlaneHandle
             }
     	}
         
-        else if(msgtype == CircusCommConst.mtype_modify_ps ){
+        else if (msgtype == CircusCommConst.mtype_modify_ps) {
     		
     		if(dir.equals("CP")){
     	        Srcinfo.setProperty("swFrom", inSw+"");
@@ -246,6 +266,22 @@ public class CPSwitch extends CSwitch implements DebugInterface, DataPlaneHandle
     	        }    
             }
     	}
+        else if (msgtype == CircusCommConst.mtype_dofwd_pkt) {
+            
+            byte[] rawPkt = cco.getRawPacket ();
+            CircusConfig cfg = CircusConfig.getConfig ();
+            
+            /* lookup PS info */
+            
+            try {
+                int port = cfg.getPsPort (selfID);
+                InetAddress adr = InetAddress.getByName (cfg.getSwAddr (selfID));
+                return send_data_to_myself (adr, port, rawPkt);
+            } catch (Exception e) {
+                log ("Oops: " + e);
+                return false;
+            }
+        }
         
         return true;
     }
