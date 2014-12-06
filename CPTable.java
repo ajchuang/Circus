@@ -95,7 +95,7 @@ public class CPTable {
     	while(Iterator.hasNext()){
     		CPTblEntry entry = Iterator.next();
     		if(entry.Srcinfo.equals(Srcinfo)){
-    			Iterator.remove();
+    			m_table.remove(entry);
     	        Circus.log ("CPTable info: Entry removed" );
     			return true;
     		}

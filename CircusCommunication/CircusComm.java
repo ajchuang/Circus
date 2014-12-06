@@ -256,8 +256,18 @@ public class CircusComm {
             cco.setRawPacket (data);
             return send (cco, oos);
         }
-        
+
         return false;
     }
-    
+
+    public static boolean do_forward_packet(byte[] data, ObjectOutputStream oos) {
+        if (oos != null) {
+            CircusCommObj cco = new CircusCommObj();
+            cco.setMsgType (CircusCommConst.mtype_dofwd_pkt);
+            cco.setRawPacket(data);
+            return send (cco, oos);
+        }
+
+        return false;
+    }
 }

@@ -14,7 +14,8 @@ public class CircusCommConst {
     public final static int mtype_modify_ps = 6;
     public final static int mtype_remove_ps = 7;
     public final static int mtype_unknown_pkt = 8;
-    
+    public final static int mtype_dofwd_pkt = 9;
+
     public final static int mtype_ack       = 0x88;
     public final static int mtype_nack      = 0xff;
     
