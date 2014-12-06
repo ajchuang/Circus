@@ -14,20 +14,22 @@ public class CSwitch extends Switch {
 		mapPortLambda = new HashMap<Integer, HashSet<Integer>>();
 		objOutStream = oos;
 	}
-	
+
 	@Override
 	public void setId(int swId) {
 		id = swId;
 	}
-	
+
+	@Override
 	public int getId() {
 		return id;
 	}
-	
+
+	@Override
 	public String toString() {
 		return "Sw" + Integer.toString(id);
 	}
-	
+
 	@Override
 	public boolean connectSwitch(int port, Switch sw) {
 		if (mapPortSwitch.containsKey(port) || mapSwitchPort.containsKey(sw))
@@ -37,11 +39,11 @@ public class CSwitch extends Switch {
 		mapSwitchPort.put(sw, port);
 		return true;
 	}
-	
+
 	@Override
 	public boolean allocLambda(int port, int lambda) {
 		HashSet<Integer> lambdaSet;
-		
+
 		lambdaSet = mapPortLambda.get(port);
 		if (lambdaSet == null) {
 			lambdaSet = new HashSet<Integer>();
@@ -50,22 +52,22 @@ public class CSwitch extends Switch {
 		System.out.println("CSallocLambda:port" + port + "/lambda" + lambda);
 		return lambdaSet.add(lambda);
 	}
-	
+
 	@Override
 	public boolean freeLambda(int port, int lambda) {
 		HashSet<Integer> lambdaSet;
-		
+
 		lambdaSet = mapPortLambda.get(port);
 		if (lambdaSet == null)
 			return false;
 		System.out.println("CSfreeLambda:port" + port + "/lambda" + lambda);
 		return lambdaSet.remove(lambda);
 	}
-	
+
 	@Override
 	public int getAvaiableLambda(int port) {
 		HashSet<Integer> lambdaSet;
-		
+
 		lambdaSet = mapPortLambda.get(port);
 		if (lambdaSet == null)
 			return 1;
@@ -75,18 +77,18 @@ public class CSwitch extends Switch {
 		System.out.println("CSgetLambda:port" + port + "/lambda" + l);
 		return l;
 	}
-	
+
 	@Override
 	public boolean testLambda(int port, int lambda) {
 		HashSet<Integer> lambdaSet;
-		
+
 		lambdaSet = mapPortLambda.get(port);
 		if (lambdaSet == null)
 			return false;
 		System.out.println("CStestLambda:port" + port + "/lambda" + lambda);
 		return lambdaSet.contains(lambda);
 	}
-	
+
 	@Override
 	public Switch getNeighborSwitch(int port) {
 		return mapPortSwitch.get(port);
@@ -96,12 +98,13 @@ public class CSwitch extends Switch {
 	public Set<Integer> getPortSet() {
 		return mapPortSwitch.keySet();
 	}
-	
+
 	@Override
 	public int getOutputPort(Switch tgtSw) {
 		return mapSwitchPort.get(tgtSw);
 	}
-	
+
+	@Override
 	public ObjectOutputStream getObjOutStream() {
 		return objOutStream;
 	}
