@@ -262,34 +262,33 @@ public class Controller {
 		}
 
 		void addHost(String cmd, PrintStream out) {
-			if (cmd.length() < 3) {
+			String toks[] = cmd.split(" +");
+
+			if (toks.length < 3) {
 				out.println("Invalid arguments");
 				return;
 			}
-
-			String toks[] = cmd.split(" +");
 
 			m_me.netEnv.addHost(Integer.valueOf(toks[1]), toks[2]);
 		}
 
 		void connectHost(String cmd, PrintStream out) {
-			if (cmd.length() < 3) {
+			String toks[] = cmd.split(" +");
+			if (toks.length < 3) {
 				out.println("Invalid arguments");
 				return;
 			}
-
-			String toks[] = cmd.split(" +");
 
 			m_me.netEnv.setupCircuit(toks[1], toks[2]);
 		}
 
 		void disconnectHost(String cmd, PrintStream out) {
-			if (cmd.length() < 3) {
+			String toks[] = cmd.split(" +");
+
+			if (toks.length < 3) {
 				out.println("Invalid arguments");
 				return;
 			}
-
-			String toks[] = cmd.split(" +");
 
 			m_me.netEnv.tearCircuit(toks[1], toks[2]);
 		}
