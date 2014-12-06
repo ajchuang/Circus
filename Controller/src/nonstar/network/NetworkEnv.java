@@ -83,7 +83,7 @@ public class NetworkEnv implements NetworkTopo {
 	public synchronized boolean addHost(int swId, String ip) {
 		Switch sw = mapIdSwitch.get(swId);
 
-		if (sw == null)
+		if (sw == null || ip == null)
 			return false;
 
 		if (sw instanceof PSwitch) {
@@ -104,6 +104,9 @@ public class NetworkEnv implements NetworkTopo {
 	}
 
 	private Switch getSwitchByIp(InetAddress ip) {
+		if (ip == null)
+			return null;
+
 		Switch sw = null;
 		Iterator<Integer> iter = mapIdSwitch.keySet().iterator();
 
@@ -152,6 +155,8 @@ public class NetworkEnv implements NetworkTopo {
 	}
 
 	public int addSwitch(int id, Switch sw) {
+		if (id < 0 || sw == null)
+			return -1;
 		if (mapIdSwitch.containsValue(sw))
 			return -1;
 		log("NEaddSw:" + id + "/" + sw.toString());
@@ -161,6 +166,8 @@ public class NetworkEnv implements NetworkTopo {
 	}
 
 	public boolean connectSwitch(Switch swL, int portL, Switch swR, int portR) {
+		if (swL == null || swR == null || portL < 0 || portR < 0)
+			return false;
 		if (!mapIdSwitch.containsValue(swL) || !mapIdSwitch.containsValue(swR))
 			return false;
 		swL.connectSwitch(portL, swR);
@@ -170,13 +177,16 @@ public class NetworkEnv implements NetworkTopo {
 
 	@Override
 	public Flow getCurrCircuit(int src, int dst) {
-		// TODO Auto-generated method stub
 		/**
 		 * Link is used to describe the complete link here
 		 * Search src and dst in the link to find the Flow
 		 */
 		Switch srcSw = mapIdSwitch.get(src);
 		Switch dstSw = mapIdSwitch.get(dst);
+
+		if (srcSw == null || dstSw == null)
+			return null;
+
 		Set<Link> linkSet = mapLinkFlow.keySet();
 
 		for (Link l : linkSet)
@@ -189,6 +199,10 @@ public class NetworkEnv implements NetworkTopo {
 	public Flow pullCircuit(int src, int dst) {
 		Switch srcSw = mapIdSwitch.get(src);
 		Switch dstSw = mapIdSwitch.get(dst);
+
+		if (srcSw == null || dstSw == null)
+			return null;
+
 		Set<Link> linkSet = mapLinkFlow.keySet();
 
 		for (Link l : linkSet)
@@ -199,9 +213,17 @@ public class NetworkEnv implements NetworkTopo {
 	}
 
 	private Link establishLink(Switch srcSw, Switch dstSw) {
+		if (srcSw == null || dstSw == null)
+			return null;
+
 		Link newLink = new Link();
+
 		int srcPort = srcSw.getOutputPort(dstSw);
 		int dstPort = dstSw.getOutputPort(srcSw);
+
+		if (srcPort < 0 || dstPort < 0)
+			return null;
+
 		int srcLambda = srcSw.getAvaiableLambda(srcPort);
 		int dstLambda = dstSw.getAvaiableLambda(dstPort);
 
@@ -231,6 +253,9 @@ public class NetworkEnv implements NetworkTopo {
 	}
 
 	private Flow getFlow(Switch srcSw, Switch dstSw) {
+		if (srcSw == null || dstSw == null)
+			return null;
+
 		HashMap<Switch, Integer> swDist = new HashMap<Switch, Integer>();
 		HashMap<Switch, Switch> swPrev= new HashMap<Switch, Switch>();
 		HashSet<Switch> toVisitSw = new HashSet<Switch>();
@@ -318,6 +343,9 @@ public class NetworkEnv implements NetworkTopo {
 	}*/
 
 	private boolean walkFlow(InetAddress srcIp, InetAddress dstIp, Flow flow) {
+		if (srcIp == null || dstIp == null || flow == null)
+			return false;
+
 		Iterator<Switch> iterSw = flow.getSwIter();
 		Iterator<Link> iterLink = flow.getLinkIter();
 		Link LinkIn = null, LinkOut = null;
@@ -337,16 +365,18 @@ public class NetworkEnv implements NetworkTopo {
 				else
 					log("Fatal error");
 				System.out.println("outport " + LinkOut.getPort(tmpSw) + "/lambda " + LinkOut.getLambda());
-				CircusComm.txAddEntry_ps_P2C(srcIp.getHostAddress(), dstIp.getHostAddress(),
+				if (!CircusComm.txAddEntry_ps_P2C(srcIp.getHostAddress(), dstIp.getHostAddress(),
 						tmpSw.getNeighborSwitch(LinkOut.getPort(tmpSw)).getId(),
-						LinkOut.getLambda(), 1, tmpSw.getObjOutStream());
+						LinkOut.getLambda(), 1, tmpSw.getObjOutStream()))
+					log("txAddEntry_ps_P2C failed");
 			} else if (tmpSw == dstSw) {
 				System.out.print("Setup out PSwitch:");
 				LinkIn = LinkOut;
 				System.out.println("inport " + LinkIn.getPort(tmpSw) + "/lambda " + LinkIn.getLambda());
-				CircusComm.txAddEntry_ps_C2P(srcIp.getHostAddress(), dstIp.getHostAddress(),
+				if (!CircusComm.txAddEntry_ps_C2P(srcIp.getHostAddress(), dstIp.getHostAddress(),
 						tmpSw.getNeighborSwitch(LinkIn.getPort(tmpSw)).getId(),
-						LinkIn.getLambda(), 1, tmpSw.getObjOutStream());
+						LinkIn.getLambda(), 1, tmpSw.getObjOutStream()))
+					log("txAddEntry_ps_C2P failed");
 			} else {
 				System.out.print("Setup CSwitch:");
 				LinkIn = LinkOut;
@@ -356,13 +386,14 @@ public class NetworkEnv implements NetworkTopo {
 					log("Fatal error");
 				System.out.print("inport " + LinkIn.getPort(tmpSw) + "/lambda " + LinkIn.getLambda());
 				System.out.println(";outport " + LinkOut.getPort(tmpSw) + "/lambda " + LinkOut.getLambda());
-				CircusComm.txSetup_cs(
+				if (!CircusComm.txSetup_cs(
 						tmpSw.getNeighborSwitch(LinkOut.getPort(tmpSw)).getId(),
 						tmpSw.getNeighborSwitch(LinkIn.getPort(tmpSw)).getId(),
 						LinkIn.getLambda(),
 						LinkOut.getLambda(),
 						1,
-						tmpSw.getObjOutStream());
+						tmpSw.getObjOutStream()))
+					log("txSetup_cs failed");
 			}
 		}
 
@@ -370,12 +401,18 @@ public class NetworkEnv implements NetworkTopo {
 	}
 
 	private boolean eraseFlow(InetAddress srcIp, InetAddress dstIp, Flow flow) {
+		if (srcIp == null || dstIp == null || flow == null)
+			return false;
+
 		Iterator<Switch> iterSw = flow.getSwIter();
 		Iterator<Link> iterLink = flow.getLinkIter();
 		Link LinkIn = null, LinkOut = null;
 		Switch tmpSw = null;
 		Switch srcSw = getSwitchByIp(srcIp);
 		Switch dstSw = getSwitchByIp(dstIp);
+
+		if (srcSw == null || dstSw == null)
+			return false;
 
 		log("eraseFlow from " + srcIp.toString() + " to " + dstIp.toString());
 
@@ -422,6 +459,9 @@ public class NetworkEnv implements NetworkTopo {
 	}
 
 	public void setupCircuit(String srcIp, String dstIp) {
+		if (srcIp == null || dstIp == null)
+			return;
+
 		InetAddress src, dst;
 		Switch srcSw, dstSw;
 		Flow flow;
@@ -440,18 +480,23 @@ public class NetworkEnv implements NetworkTopo {
 					if (flow != null) {
 						if (!walkFlow(src, dst, flow))
 							log("walkFlow failed!!!");
+						flow.addUser();
 					}
+				} else {
+					flow.addUser();
 				}
 			} else {
 				log("Cannot find src/dst Switch by IP");
 			}
 		} catch (UnknownHostException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
 
 	public void tearCircuit(String srcIp, String dstIp) {
+		if (srcIp == null || dstIp == null)
+			return;
+
 		InetAddress src, dst;
 		Switch srcSw, dstSw;
 		Flow flow;
@@ -464,31 +509,34 @@ public class NetworkEnv implements NetworkTopo {
 			srcSw = getSwitchByIp(src);
 			dstSw = getSwitchByIp(dst);
 			if (srcSw != null && dstSw != null) {
-				flow = pullCircuit(srcSw.getId(), dstSw.getId());
+				flow = getCurrCircuit(srcSw.getId(), dstSw.getId());
 				if (flow != null) {
 					if (!eraseFlow(src, dst, flow))
 						log("eraseFlow failed!!!");
+					if (flow.removeUser())
+						pullCircuit(srcSw.getId(), dstSw.getId());
 				}
 			} else {
 				log("Cannot find src/dst Switch by IP");
 			}
 		} catch (UnknownHostException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
 
 	@Override
 	public Flow setupCircuit(int src, int dst) {
-		// TODO Auto-generated method stub
 		/**
 		 *
 		 */
-		if (src == dst)
+		if (src == dst || src < 0 || dst < 0)
 			return null;
 
 		Switch srcSw = mapIdSwitch.get(src);
 		Switch dstSw = mapIdSwitch.get(dst);
+
+		if (srcSw == null || dstSw == null)
+			return null;
 
 		Flow flow = getFlow(srcSw, dstSw);
 		if (flow != null) {

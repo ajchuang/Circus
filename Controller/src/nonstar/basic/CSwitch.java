@@ -42,6 +42,9 @@ public class CSwitch extends Switch {
 
 	@Override
 	public boolean allocLambda(int port, int lambda) {
+		if (port < 0 || lambda <= 0)
+			return false;
+
 		HashSet<Integer> lambdaSet;
 
 		lambdaSet = mapPortLambda.get(port);
@@ -55,6 +58,9 @@ public class CSwitch extends Switch {
 
 	@Override
 	public boolean freeLambda(int port, int lambda) {
+		if (port < 0 || lambda <= 0)
+			return false;
+
 		HashSet<Integer> lambdaSet;
 
 		lambdaSet = mapPortLambda.get(port);
@@ -66,6 +72,9 @@ public class CSwitch extends Switch {
 
 	@Override
 	public int getAvaiableLambda(int port) {
+		if (port < 0)
+			return -1;
+
 		HashSet<Integer> lambdaSet;
 
 		lambdaSet = mapPortLambda.get(port);
@@ -80,6 +89,9 @@ public class CSwitch extends Switch {
 
 	@Override
 	public boolean testLambda(int port, int lambda) {
+		if (port < 0 || lambda <= 0)
+			return false;
+
 		HashSet<Integer> lambdaSet;
 
 		lambdaSet = mapPortLambda.get(port);

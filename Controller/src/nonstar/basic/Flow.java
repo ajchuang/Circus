@@ -4,13 +4,27 @@ import java.util.Iterator;
 import java.util.LinkedList;
 
 public class Flow {
+	int userCount;
 	LinkedList<Link> link;
 	LinkedList<Switch> sw;
 
 	public Flow() {
 		super();
+		userCount = 0;
 		link = new LinkedList<Link>();
 		sw = new LinkedList<Switch>();
+	}
+
+	public void addUser() {
+		userCount++;
+	}
+
+	public boolean removeUser() {
+		if (userCount > 0)
+			userCount--;
+		if (userCount == 0)
+			return true;
+		return false;
 	}
 
 	public void addLinkFirst(Link l) {
