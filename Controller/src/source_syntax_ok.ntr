@@ -1,0 +1,22 @@
+Nonstar {
+  adb : "asdf";
+  num : 1;
+  flag : true;
+}
+
+on_start# {
+  int a = 11;
+  Dict<int, int> map;
+  List<int> l;
+  if ( a + b < 11 ) {
+    return;
+  }
+}
+
+int foo(int a, int b) {
+  return (a + b);
+}
+
+on_req# {
+  foo(11, 12);
+}

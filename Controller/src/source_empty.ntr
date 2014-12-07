@@ -1,0 +1,11 @@
+Nonstar {
+  abc : "abc";
+  num : 1;
+  flag : true;
+}
+
+on_start# {
+}
+
+on_req# {
+}
