@@ -9,8 +9,9 @@ JFLAGS = -g
 .SUFFIXES: .java .class
 
 CLASSES = \
-    nonstar/interpreter/PrimaryType.java \
-    nonstar/interpreter/Type.java 
+    nonstar/compiler/PrimaryType.java \
+    nonstar/compiler/Type.java \
+    nonstar/compiler/AttributeObj.java
 
 all: Parser.class
 
@@ -29,7 +30,7 @@ build: clean Parser.class
 
 clean:
 	rm -f *~ *.class Parser.java Yylex.java .*.swp
-	rm -f nonstar/interpreter/*.class
+	rm -f nonstar/compiler/*.class
 	rm -f y.output
 
 Parser.class: Yylex.java Parser.java classes

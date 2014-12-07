@@ -10,14 +10,14 @@ public class NonstarTemplate extends NonstarBase {
 	//functions
 	
 	@Override
-	public void on_start() {
+	public void onstart() {
 
 		//on_start
 
 	}
 
 	@Override
-	public Flow on_req(Switch src, Switch dst) {
+	public Flow onreq(Switch src, Switch dst) {
 		
 		Flow flow = env.getCurrCircuit(src.getId(), dst.getId());
 		if (flow == null)

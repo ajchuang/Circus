@@ -12,7 +12,7 @@ public abstract class NonstarBase {
 		this.env = env;
 	}
 	
-	public abstract void on_start();
-	public abstract Flow on_req(Switch src, Switch dst);
+	public abstract void onstart();
+	public abstract Flow onreq(Switch src, Switch dst);
 
 }

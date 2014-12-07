@@ -49,7 +49,7 @@ public class Controller {
 	}
 	
 	public Flow receiveReq(Switch src, Switch dst) {
-		return nonstar.on_req(src, dst);
+		return nonstar.onreq(src, dst);
 	}
 
 	public void startService () {

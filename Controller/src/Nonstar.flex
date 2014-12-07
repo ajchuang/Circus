@@ -28,7 +28,7 @@ NONSTAR_DF = "Nonstar"
 INIT = "on_start#"
 ON_REQ = "on_req#"
 
-CIRCUIT = "Circuit"
+FLOW = "Flow"
 SWITCH = "Switch"
 
 
@@ -103,7 +103,7 @@ ws = {delim}+
 "int"   {return Parser.DECLR_INT;}
 "String"    {return Parser.DECLR_STR;}
 "bool"  {return Parser.DECLR_BOOL;}
-{CIRCUIT} {return Parser.CIRCUIT;}
+{FLOW} {return Parser.FLOW;}
 {SWITCH} {return Parser.SWITCH;}
 "Dict"  {return Parser.DICT;}
 "List"  {return Parser.LIST;}

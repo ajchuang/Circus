@@ -5,14 +5,7 @@ import nonstar.basic.Switch;
 
 public class Nonstar extends NonstarBase {
 
-	boolean flag = true;
-	public void on_start()  {
-	
-	}
-	public Flow on_req(Switch src, Switch dst)  {
-			return null;
-	}
-	
+###
 	
 	@Override
 	public void onstart() {
