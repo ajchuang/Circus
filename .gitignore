@@ -13,3 +13,7 @@ hs_err_pid*
 
 # Mac file system shit
 *.DS_Store
+
+# swp
+*.swp
+~*

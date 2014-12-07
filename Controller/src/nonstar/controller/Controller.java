@@ -11,6 +11,8 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.concurrent.ConcurrentHashMap;
 
+import nonstar.basic.Flow;
+import nonstar.basic.Switch;
 import nonstar.network.NetworkEnv;
 import CircusCommunication.CircusComm;
 import CircusCommunication.CircusCommConst;
@@ -30,7 +32,7 @@ public class Controller {
 	ConcurrentHashMap<Integer, ObjectOutputStream> m_output;
 	NetworkEnv netEnv;
 	
-	ITargetBase target;
+	NonstarBase nonstar;
 
 	public static void log (String s) {
 		System.out.println ("[Controller] " + s);
@@ -40,9 +42,14 @@ public class Controller {
 		m_dbgPort = dport;
 		m_ctlPort = cport;
 		m_output = new ConcurrentHashMap<Integer, ObjectOutputStream> ();
-		netEnv = new NetworkEnv();
+		netEnv = new NetworkEnv(this);
+		nonstar = new NonstarTemplate(netEnv);
 
 		log ("Controller: " + m_ctlPort + ":" + m_dbgPort);
+	}
+	
+	public Flow receiveReq(Switch src, Switch dst) {
+		return nonstar.on_req(src, dst);
 	}
 
 	public void startService () {

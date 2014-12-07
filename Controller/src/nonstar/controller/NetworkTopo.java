@@ -2,9 +2,16 @@ package nonstar.controller;
 
 import nonstar.basic.Flow;
 
-public interface NetworkTopo {
+public abstract class NetworkTopo {
 
-	public Flow getCurrCircuit(int src, int dst);
-	public Flow setupCircuit(int src, int dst);
+	protected Controller constroller;
+	
+	public NetworkTopo(Controller constroller) {
+		super();
+		this.constroller = constroller;
+	}
+	
+	public abstract Flow getCurrCircuit(int src, int dst);
+	public abstract Flow setupCircuit(int src, int dst);
 
 }

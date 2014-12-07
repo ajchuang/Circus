@@ -14,13 +14,14 @@ import nonstar.basic.Flow;
 import nonstar.basic.Link;
 import nonstar.basic.PSwitch;
 import nonstar.basic.Switch;
+import nonstar.controller.Controller;
 import nonstar.controller.NetworkTopo;
 import CircusCommunication.CircusComm;
 import CircusCommunication.CircusCommConst;
 import CircusCommunication.CircusCommObj;
 import CircusPPacket.PPacket;
 
-public class NetworkEnv implements NetworkTopo {
+public class NetworkEnv extends NetworkTopo {
 	HashMap<Integer, Switch> mapIdSwitch;
 	HashMap<Link, Flow> mapLinkFlow;
 	HashMap<Switch, HashMap<Integer, Integer>> mapSwPortSwId;
@@ -29,8 +30,8 @@ public class NetworkEnv implements NetworkTopo {
 		System.out.println ("[NetEnv] " + s);
 	}
 
-	public NetworkEnv() {
-		super();
+	public NetworkEnv(Controller controller) {
+		super(controller);
 		mapIdSwitch = new HashMap<Integer, Switch>();
 		mapLinkFlow = new HashMap<Link, Flow>();
 		mapSwPortSwId = new HashMap<Switch, HashMap<Integer, Integer>>();
@@ -141,9 +142,13 @@ public class NetworkEnv implements NetworkTopo {
 			Switch dstSw = getSwitchByIp(ppkt.getDstIp());
 
 			if (srcSw != null && dstSw != null) {
-				Flow flow = getCurrCircuit(srcSw.getId(), dstSw.getId());
-				if (flow == null)
-					flow = setupCircuit(srcSw.getId(), dstSw.getId());
+				
+				Flow flow = constroller.receiveReq(srcSw, dstSw);
+							
+//				Flow flow = getCurrCircuit(srcSw.getId(), dstSw.getId());
+//				if (flow == null)
+//					flow = setupCircuit(srcSw.getId(), dstSw.getId());
+				
 				if (flow != null) {
 					if (!walkFlow(ppkt.getSrcIp(), ppkt.getDstIp(), flow))
 						log("process walkFlow failed!!!");
