@@ -16,6 +16,8 @@ import CircusCommunication.CircusComm;
 import CircusCommunication.CircusCommConst;
 import CircusCommunication.CircusCommObj;
 
+
+
 // cmd format: {cs_insert swId dstSw srcSw inlambda outlambda tdm_id}
 
 //cmd format: {ps_insert swId dir srcIp dstIp out/in_Sw lambda tdm_id}
@@ -27,7 +29,8 @@ public class Controller {
 	int m_ctlPort;
 	ConcurrentHashMap<Integer, ObjectOutputStream> m_output;
 	NetworkEnv netEnv;
-
+	
+	ITargetBase target;
 
 	public static void log (String s) {
 		System.out.println ("[Controller] " + s);

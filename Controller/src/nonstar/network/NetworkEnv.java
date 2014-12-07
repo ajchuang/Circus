@@ -14,7 +14,7 @@ import nonstar.basic.Flow;
 import nonstar.basic.Link;
 import nonstar.basic.PSwitch;
 import nonstar.basic.Switch;
-import nonstar.interpreter.NetworkTopo;
+import nonstar.controller.NetworkTopo;
 import CircusCommunication.CircusComm;
 import CircusCommunication.CircusCommConst;
 import CircusCommunication.CircusCommObj;
