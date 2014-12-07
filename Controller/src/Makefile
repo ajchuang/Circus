@@ -11,7 +11,12 @@ JFLAGS = -g
 CLASSES = \
     nonstar/compiler/PrimaryType.java \
     nonstar/compiler/Type.java \
-    nonstar/compiler/AttributeObj.java
+    nonstar/compiler/AttributeObj.java \
+    nonstar/compiler/FunctionObj.java \
+    nonstar/compiler/SymbolRecord.java \
+    nonstar/compiler/ScopeBlock.java \
+    nonstar/compiler/SymbolTable.java \
+    nonstar/compiler/Util.java
 
 all: Parser.class
 

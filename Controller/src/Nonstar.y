@@ -105,17 +105,19 @@
       
 %%
 
-source_code: nonstar_config procedures_list
+source_code: { Util.init(); } nonstar_config procedures_list
   {
-    ArrayList<AttributeObj> nonstar_config = (ArrayList<AttributeObj>)$1;
-    ArrayList<FunctionObj> procedures = (ArrayList<FunctionObj>)$2;
-    System.out.println("source_code finished");
+    ArrayList<AttributeObj> nonstar_config = (ArrayList<AttributeObj>)$2;
+    ArrayList<FunctionObj> procedures = (ArrayList<FunctionObj>)$3;
+    Util.genNonstar(nonstar_config, procedures);
+    yydebug("source_code finished");
   }
   ;
 nonstar_config: NONSTAR_DF json
   {
-    $$ = $2;
-    System.out.println("nonstar_config finished");
+    ArrayList<AttributeObj> nonstar_config = (ArrayList<AttributeObj>)$2;
+    yydebug("nonstar_config finished, " + nonstar_config.size() + " json items" );
+    $$ = nonstar_config;
   }
   ;
 json: '{' json_content '}' { $$ = $2; }
@@ -141,6 +143,11 @@ json_item
   {
     AttributeObj jsonitem = (AttributeObj)$3;
     jsonitem.id = $1; 
+    yydebug("Find json item " + $1 + " (" + jsonitem.type + ", " + jsonitem.value + ")");
+    if(!SymbolTable.putNonstar($1, true, jsonitem)){
+      yyerror($1 + " is not an available name."); 
+    }
+    $$ = jsonitem;
   }
   ;
 function_definition
@@ -204,23 +211,23 @@ non_void_type
     $$ = new Type(PrimaryType.DICT, second_type, third_type);
   }
 | primitive_type { $$ = $1; }
-	;
+  ;
 primitive_type
 : DECLR_INT { $$ = Type.INTEGER; }
 | DECLR_STR { $$ = Type.STRING; }
 | DECLR_BOOL { $$ = Type.BOOLEAN; }
-	;
+  ;
 value
 : INTEGER { $$=AttributeObj.newAttributeObjByTypeValue(Type.INTEGER, Integer.toString($1)); }
 | STRING { $$=AttributeObj.newAttributeObjByTypeValue(Type.STRING, $1); }
 | TRUE { $$=AttributeObj.newAttributeObjByTypeValue(Type.BOOLEAN, "true"); }
 | FALSE { $$=AttributeObj.newAttributeObjByTypeValue(Type.BOOLEAN, "false"); }
 | NULL { $$=AttributeObj.newAttributeObjByTypeValue(Type.NULL, "null");}
-    ;
+  ;
 /* ----------------------------------------------------------- */
 block
 : '{' statement_list '}' {  }
-| '{' '}' { }
+| '{' '}' { $$ = ""; }
   ;
 statement_list
 : statement_list statement { }
@@ -396,6 +403,9 @@ RelationalBinaryOperator
     return yyl_return;
   }
 
+  public void yydebug (String msg) {
+    System.out.println("Compiling: " + msg);
+  }
 
   public void yyerror (String error) {
     success = false;

@@ -18,6 +18,8 @@ public class Util {
 	
 	public static void init() {
 		
+		SymbolTable.initSymbolTable();
+		
 		onstart.id = "on_start";
 		onstart.return_type = Type.VOID;
 		onstart.parameters = new ArrayList<AttributeObj>();
@@ -54,18 +56,20 @@ public class Util {
 					case 1:
 						sb = new StringBuilder();
 						sb.append("\t");
-						for(AttributeObj attr : nonstar_config){
-							strBuildAttribute(sb, attr);
-						}
+						if(nonstar_config != null)
+							for(AttributeObj attr : nonstar_config){
+								strBuildAttribute(sb, attr);
+							}
 						
-						for(FunctionObj func : procedures){
-							if(func.equals(onstart))
-								saw_onstart = true;
-							if(func.equals(onreq))
-								saw_onreq = true;
+						if(procedures != null)
+							for(FunctionObj func : procedures){
+								if(func.equals(onstart))
+									saw_onstart = true;
+								if(func.equals(onreq))
+									saw_onreq = true;
 							
-							strBuildFunction(sb, func);
-						}
+								strBuildFunction(sb, func);
+							}
 						
 						if(!saw_onstart){
 							strBuildFunction(sb, onstart);

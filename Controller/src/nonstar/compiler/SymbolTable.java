@@ -6,9 +6,9 @@ public class SymbolTable {
 	
 	public static int current; // 1 for nonstar_config, 2 for afterwards
 	
-	public static ScopeBlock playerBlock = new ScopeBlock();
-	
 	public static ScopeBlock reservedBlock = new ScopeBlock();
+	
+	public static ScopeBlock nonstarBlock = new ScopeBlock();
 	
 	public static ScopeBlock circuitBlock = new ScopeBlock();
 	public static ScopeBlock switchBlock = new ScopeBlock();
@@ -16,13 +16,8 @@ public class SymbolTable {
 	public static FunctionObj curFunction = null;
 	public static LinkedList<ScopeBlock> function_locals = new LinkedList<ScopeBlock>();
 	
-	public static HashSet<String> current_skill_IDs = null;
 	public static HashSet<String> current_all_IDs = null;
 	public static HashSet<String> all_IDs = new HashSet<String>();
-	
-	public static HashSet<String> card_names = new HashSet<String>();
-	public static HashSet<String> character_names = new HashSet<String>();
-	
 	
 	public static void newLocalBlock() {
 		function_locals.addFirst(new ScopeBlock());
@@ -33,181 +28,95 @@ public class SymbolTable {
 	}
 	
 	public static SymbolRecord accessID(String ID){
-//		for(ScopeBlock sb : function_locals){
-//			if(sb.alreadyHave(ID))
-//				return sb.accessSymbolInThisScope(ID);
-//		}
-//		if((current == 2||current == 3) && currentCardCharacterBlock.alreadyHave(ID)){
-//			return currentCardCharacterBlock.accessSymbolInThisScope(ID);
-//		}
-//		if(gameBlock.alreadyHave(ID)){
-//			return gameBlock.accessSymbolInThisScope(ID);
-//		}
+		for(ScopeBlock sb : function_locals){
+			if(sb.alreadyHave(ID))
+				return sb.accessSymbolInThisScope(ID);
+		}
+
+		if(nonstarBlock.alreadyHave(ID)){
+			return nonstarBlock.accessSymbolInThisScope(ID);
+		}
 		return null;
 	}
-//	
-//	public static boolean putInGame(String id, boolean isAttribute, Object attrOrFunc){
-//		if(reservedBlock.alreadyHave(id)){
-//			return false;
-//		}
-//		
-//		if(gameBlock.alreadyHave(id) || all_IDs.contains(id)){
-//			return false;
-//		}
-//		else{
-//			SymbolRecord sr = gameBlock.addRecord(id);
-//			sr.setValue(isAttribute, attrOrFunc);
-//			all_IDs.add(id);
-//			return true;
-//		}
-//	}
 	
-//	public static boolean putNewCardName(String id){
-//		if(reservedBlock.alreadyHave(id)){
-//			return false;
-//		}
-//		
-//		if(gameBlock.alreadyHave(id) || all_IDs.contains(id)){
-//			return false;
-//		}
-//		else{
-//			card_names.add(id);
-//			all_IDs.add(id);
-//			return true;
-//		}
-//	}
+	public static boolean putNonstar(String id, boolean isAttribute, Object attrOrFunc){
+		if(reservedBlock.alreadyHave(id)){
+			return false;
+		}
+		
+		if(nonstarBlock.alreadyHave(id) || all_IDs.contains(id)){
+			return false;
+		}
+		else{
+			SymbolRecord sr = nonstarBlock.addRecord(id);
+			sr.setValue(isAttribute, attrOrFunc);
+			all_IDs.add(id);
+			return true;
+		}
+	}
+
 	
-//	public static boolean putNewCharacterName(String id){
-//		if(reservedBlock.alreadyHave(id)){
-//			return false;
-//		}
-//		
-//		if(gameBlock.alreadyHave(id) || all_IDs.contains(id)){
-//			return false;
-//		}
-//		else{
-//			character_names.add(id);
-//			all_IDs.add(id);
-//			return true;
-//		}
-//	}
-//	
-//	public static boolean putInCard(String id, boolean isAttribute, Object attrOrFunc){
-//		if(reservedBlock.alreadyHave(id)){
-//			return false;
-//		}
-//		
-//		if(gameBlock.alreadyHave(id) || currentCardCharacterBlock.alreadyHave(id) || current_all_IDs.contains(id) ){
-//			return false;
-//		}
-//		else{
-//			SymbolRecord sr = currentCardCharacterBlock.addRecord(id);
-//			sr.setValue(isAttribute, attrOrFunc);
-//			
-//			if(firstCard){
-//				sr = baseCardBlock.addRecord(id);
-//				sr.setValue(isAttribute, attrOrFunc);
-//			}
-//			
-//			all_IDs.add(id);
-//			current_all_IDs.add(id);
-//			return true;
-//		}
-//	}
-//	
-//	public static boolean putInCharacter(String id, boolean isAttribute, Object attrOrFunc){
-//		if(reservedBlock.alreadyHave(id)){
-//			return false;
-//		}
-//		
-//		if(gameBlock.alreadyHave(id) || currentCardCharacterBlock.alreadyHave(id) || current_all_IDs.contains(id) ){
-//			return false;
-//		}
-//		else{
-//			SymbolRecord sr = currentCardCharacterBlock.addRecord(id);
-//			sr.setValue(isAttribute, attrOrFunc);
-//			
-//			if(firstCharacter){
-//				sr = baseCharacterBlock.addRecord(id);
-//				sr.setValue(isAttribute, attrOrFunc);
-//			}
-//			
-//			all_IDs.add(id);
-//			current_all_IDs.add(id);
-//			return true;
-//		}
-//	}
-//	
-//	public static boolean putInSkill(String id){
-//		if(current_skill_IDs.contains(id))
-//			return false;
-//		current_skill_IDs.add(id);
-//		return true;
-//	}
-//	
-//	public static boolean putInLocal(String id, AttributeObj attr){
-//		if(reservedBlock.alreadyHave(id)){
-//			return false;
-//		}
-//		
-//		if(gameBlock.alreadyHave(id))
-//			return false;
-//		for(ScopeBlock sb : function_locals){
-//			if(sb.alreadyHave(id))
-//				return false;
-//		}
-//		if(( current == 2 || current == 3) && currentCardCharacterBlock.alreadyHave(id) )
-//			return false;
-//		if( current == 2 && baseCardBlock.alreadyHave(id) )
-//			return false;
-//		if( current == 3 && baseCharacterBlock.alreadyHave(id))
-//			return false;
-//		
-//		ScopeBlock sb = function_locals.getFirst();
-//		SymbolRecord sr = sb.addRecord(id);
-//		sr.setValue(true, attr);
-//		
-//		return true;
-//	}
-//	
-//	public static void addAttributeRecordToScope(String id, ScopeBlock scope, Type type){
-//		SymbolRecord sr = scope.addRecord(id);
-//		sr.setValue(true, new AttributeObj(id, type));
-//	}
-//	
-//	public static void addFunctionRecordToScope(String id, ScopeBlock scope, 
-//			Type return_type, ArrayList<AttributeObj> parameters){
-//		SymbolRecord sr = scope.addRecord(id);
-//		FunctionObj func = new FunctionObj();
-//		func.id = id;
-//		func.return_type = return_type;
-//		func.parameters = parameters;
-//		sr.setValue(false, func);
-//	}
+	public static boolean putInLocal(String id, AttributeObj attr){
+		if(reservedBlock.alreadyHave(id)){
+			return false;
+		}
+		
+		if(nonstarBlock.alreadyHave(id))
+			return false;
+		for(ScopeBlock sb : function_locals){
+			if(sb.alreadyHave(id))
+				return false;
+		}
+		
+		ScopeBlock sb = function_locals.getFirst();
+		SymbolRecord sr = sb.addRecord(id);
+		sr.setValue(true, attr);
+		all_IDs.add(id);
+		return true;
+	}
+	
+	public static void addAttributeRecordToScope(String id, ScopeBlock scope, Type type){
+		SymbolRecord sr = scope.addRecord(id);
+		sr.setValue(true, AttributeObj.newAttributeObjByTypeID(type, id));
+	}
+	
+	public static void addFunctionRecordToScope(String id, ScopeBlock scope, 
+			Type return_type, ArrayList<AttributeObj> parameters){
+		SymbolRecord sr = scope.addRecord(id);
+		FunctionObj func = new FunctionObj();
+		func.id = id;
+		func.return_type = return_type;
+		func.parameters = parameters;
+		sr.setValue(false, func);
+	}
 	
 	public static void initSymbolTable(){
 //				
-//		// Can not be used in GameWizard because they are types in Java 
-//		String[] java_keywords = {"IOException", "ArrayList", "Collections", 
-//				"HashMap", "Map", "LinkedList", "List", "Array", "Integer"};
-//		// Can not be used in GameWizard because they are GameWizard keywords
-////		String[] game_wizard_keywords = {"define", "game", "cards", "characters", 
-////				"method", "Player", "skill", "void", "int", "String", "boolean", 
-////				"init", "round_begin", "turn", "round_end", "true", "false", "in"};
-//		// Can not be used in GameWizard because they are used in templates of target code
-//		String[] game_wizard_reserved = {"CharacterBase", "CardBase", "GameServer", "port", 
-//				"map", "currentPlayerIndex", "roundCount", "nextOnlinePlayer"};
-//		
-//		
-//		for(String id : java_keywords){
-//			reservedBlock.addRecord(id);
-//			all_IDs.add(id);
-//		}
-//		for(String id : game_wizard_reserved){
-//			reservedBlock.addRecord(id);
-//			all_IDs.add(id);
-//		}
-//		
+		// Can not be used in Nonstar because they are types/keywords in Java 
+		String[] java_reserved = {"Exception", "boolean", "try", "final", "finally", "System",
+				"catch", "public", "protected", "private", "static", "HashMap", "ArrayList",
+				"java"};
+		// Can not be used in Nonstar because they are Nonstar keywords
+		String[] nonstar_keywords = {"Nonstar", "void", "int", "String", "boolean", 
+				"true", "false", "in"};
+		// Can not be used in Nonstar because they are used in templates of target code
+		String[] nonstar_reserved = {"NenstarBase", "NonstarTemplate", "NetworkTopo", 
+				"Controller", "onstart", "onreq", "nextOnlinePlayer", "nonstar", "controller",
+				"Flow", "Switch"};	
+		
+		for(String id : java_reserved){
+			reservedBlock.addRecord(id);
+			all_IDs.add(id);
+		}
+		for(String id : nonstar_keywords){
+			reservedBlock.addRecord(id);
+			all_IDs.add(id);
+		}
+		for(String id : nonstar_reserved){
+			reservedBlock.addRecord(id);
+			all_IDs.add(id);
+		}
+		
 //		ArrayList<AttributeObj> parameters;
 //		addAttributeRecordToScope("id", playerBlock, Type.INTEGER);
 //		addAttributeRecordToScope("handCards", playerBlock, new Type(PrimaryType.LIST,Type.CARD,null));
