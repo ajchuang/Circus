@@ -136,6 +136,7 @@ public class NetworkEnv implements NetworkTopo {
 		case CircusCommConst.mtype_unknown_pkt:
 			log("Handling unknown packet");
 			Switch srcSw = mapIdSwitch.get(cco.getSender());
+			byte rawPkt[] = cco.getRawPacket();
 			PPacket ppkt = PPacket.unpack(cco.getRawPacket());
 			Switch dstSw = getSwitchByIp(ppkt.getDstIp());
 
@@ -143,9 +144,16 @@ public class NetworkEnv implements NetworkTopo {
 				Flow flow = getCurrCircuit(srcSw.getId(), dstSw.getId());
 				if (flow == null)
 					flow = setupCircuit(srcSw.getId(), dstSw.getId());
-				if (flow != null)
+				if (flow != null) {
 					if (!walkFlow(ppkt.getSrcIp(), ppkt.getDstIp(), flow))
 						log("process walkFlow failed!!!");
+					try {
+						Thread.sleep(1);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+					CircusComm.do_forward_packet(rawPkt, srcSw.getObjOutStream());
+				}
 			}
 
 			break;

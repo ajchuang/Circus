@@ -166,12 +166,11 @@ public class CPSwitch extends CSwitch implements DebugInterface, DataPlaneHandle
         //        InetAddress dstIp;
     	
     	int msgtype = cco.getMsgType();
-    	String dir = cco.getCPdir().toUpperCase ();
     	Properties Srcinfo = new Properties();
     	Properties Dstinfo = new Properties();
     	
         if (msgtype != CircusCommConst.mtype_dofwd_pkt) {
-
+            String dir = cco.getCPdir().toUpperCase ();
             int lambda = cco.getinLambda (); 
             int inSw = cco.getSrcSw();
             int tdm_id = cco.getTdmId ();
