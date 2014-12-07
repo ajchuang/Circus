@@ -5,7 +5,7 @@ Nonstar {
 }
 
 on_start# {
-  int a = 11;
+  int a = num;
   Dict<int, int> map;
   List<int> l;
   if ( a + b < 11 ) {

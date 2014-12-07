@@ -19,6 +19,12 @@ public class SymbolTable {
 	public static HashSet<String> current_all_IDs = null;
 	public static HashSet<String> all_IDs = new HashSet<String>();
 	
+	public static String errMsgNewID(String id) {
+		if(current == 1)
+			return id + " is not an available name in nonstar config";
+		return id + " is not an available name in current scope";
+	}
+	
 	public static void newLocalBlock() {
 		function_locals.addFirst(new ScopeBlock());
 	}

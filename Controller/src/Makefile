@@ -11,6 +11,7 @@ JFLAGS = -g
 CLASSES = \
     nonstar/compiler/PrimaryType.java \
     nonstar/compiler/Type.java \
+    nonstar/compiler/Expression.java \
     nonstar/compiler/AttributeObj.java \
     nonstar/compiler/FunctionObj.java \
     nonstar/compiler/SymbolRecord.java \

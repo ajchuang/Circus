@@ -11,7 +11,7 @@ import java.util.ArrayList;
 public class Util {
 	
 	public static String templatePath = "nonstar/compiler/NonstarTemplate.txt";
-	public static String targetPath = "nonstar/controller/NonstarTest.java";
+	public static String targetPath = "nonstar/controller/Nonstar.java";
 	
 	public static FunctionObj onstart = new FunctionObj();
 	public static FunctionObj onreq = new FunctionObj();
@@ -138,6 +138,27 @@ public class Util {
 		sb.append(" {\n\t");
 		sb.append(func.body);
 		sb.append("\n\t}\n\t");
+	}
+	
+	public static void startCompilingNonstarConfig() {
+		SymbolTable.current = 1;
+	}
+	
+	public static void startCompilingProcedures() {
+		SymbolTable.current = 2;
+	}
+	
+	public static String findIDErr(String id) {
+		return "Can not find ID " + id;
+	}
+	
+	public static String newIDErr(String id) {
+		return SymbolTable.errMsgNewID(id);
+	}
+	
+	public static String operationErr(String op, String exp1, String exp2) {
+		// op is unary when exp2 == null
+		return op + " is not a valid operation for " + exp1 + (exp2 == null ? "" : " and " + exp2);
 	}
 	
 	public static void main(String[] args) {
