@@ -142,13 +142,13 @@ public class NetworkEnv extends NetworkTopo {
 			Switch dstSw = getSwitchByIp(ppkt.getDstIp());
 
 			if (srcSw != null && dstSw != null) {
-				
+
 				Flow flow = constroller.receiveReq(srcSw, dstSw);
-							
-//				Flow flow = getCurrCircuit(srcSw.getId(), dstSw.getId());
-//				if (flow == null)
-//					flow = setupCircuit(srcSw.getId(), dstSw.getId());
-				
+
+				//				Flow flow = getCurrCircuit(srcSw.getId(), dstSw.getId());
+				//				if (flow == null)
+				//					flow = setupCircuit(srcSw.getId(), dstSw.getId());
+
 				if (flow != null) {
 					if (!walkFlow(ppkt.getSrcIp(), ppkt.getDstIp(), flow))
 						log("process walkFlow failed!!!");
@@ -189,14 +189,11 @@ public class NetworkEnv extends NetworkTopo {
 	}
 
 	@Override
-	public Flow getCurrCircuit(int src, int dst) {
+	public Flow getCurrCircuit(Switch srcSw, Switch dstSw) {
 		/**
 		 * Link is used to describe the complete link here
 		 * Search src and dst in the link to find the Flow
 		 */
-		Switch srcSw = mapIdSwitch.get(src);
-		Switch dstSw = mapIdSwitch.get(dst);
-
 		if (srcSw == null || dstSw == null)
 			return null;
 
@@ -487,9 +484,9 @@ public class NetworkEnv extends NetworkTopo {
 			srcSw = getSwitchByIp(src);
 			dstSw = getSwitchByIp(dst);
 			if (srcSw != null && dstSw != null) {
-				flow = getCurrCircuit(srcSw.getId(), dstSw.getId());
+				flow = getCurrCircuit(srcSw, dstSw);
 				if (flow == null) {
-					flow = setupCircuit(srcSw.getId(), dstSw.getId());
+					flow = setupCircuit(srcSw, dstSw);
 					if (flow != null) {
 						if (!walkFlow(src, dst, flow))
 							log("walkFlow failed!!!");
@@ -522,7 +519,7 @@ public class NetworkEnv extends NetworkTopo {
 			srcSw = getSwitchByIp(src);
 			dstSw = getSwitchByIp(dst);
 			if (srcSw != null && dstSw != null) {
-				flow = getCurrCircuit(srcSw.getId(), dstSw.getId());
+				flow = getCurrCircuit(srcSw, dstSw);
 				if (flow != null) {
 					if (!eraseFlow(src, dst, flow))
 						log("eraseFlow failed!!!");
@@ -538,16 +535,10 @@ public class NetworkEnv extends NetworkTopo {
 	}
 
 	@Override
-	public Flow setupCircuit(int src, int dst) {
+	public Flow setupCircuit(Switch srcSw, Switch dstSw) {
 		/**
 		 *
 		 */
-		if (src == dst || src < 0 || dst < 0)
-			return null;
-
-		Switch srcSw = mapIdSwitch.get(src);
-		Switch dstSw = mapIdSwitch.get(dst);
-
 		if (srcSw == null || dstSw == null)
 			return null;
 
