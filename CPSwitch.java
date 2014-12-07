@@ -170,108 +170,109 @@ public class CPSwitch extends CSwitch implements DebugInterface, DataPlaneHandle
     	Properties Srcinfo = new Properties();
     	Properties Dstinfo = new Properties();
     	
-    	int lambda = cco.getinLambda (); 
-        int inSw = cco.getSrcSw();
-        int tdm_id = cco.getTdmId ();
-         /* setup PS part */
-        String srcIp = cco.getSrcIp ();
-        String dstIp = cco.getDstIp ();
+        if (msgtype != CircusCommConst.mtype_dofwd_pkt) {
+
+            int lambda = cco.getinLambda (); 
+            int inSw = cco.getSrcSw();
+            int tdm_id = cco.getTdmId ();
+            
+            /* setup PS part */
+            String srcIp = cco.getSrcIp ();
+            String dstIp = cco.getDstIp ();
         
-        if (cco.getSwType() == 0) {
-        	return parsecco_CS (cco);
-        } else if (msgtype == CircusCommConst.mtype_setup_ps) {
-    		
-    		if (dir.equals("CP")) {
-    	        Srcinfo.setProperty("swFrom", inSw+"");
-    	        Srcinfo.setProperty("lambda", lambda+"");
-    	        Srcinfo.setProperty("tdmId", tdm_id+"");
-    	        
-    	        Dstinfo.setProperty("srcIp", srcIp);
-    	        Dstinfo.setProperty("dstIp", dstIp);
+            if (cco.getSwType() == 0) {
+                return parsecco_CS (cco);
+            } else if (msgtype == CircusCommConst.mtype_setup_ps) {
+                
+                if (dir.equals("CP")) {
+                    Srcinfo.setProperty("swFrom", inSw+"");
+                    Srcinfo.setProperty("lambda", lambda+"");
+                    Srcinfo.setProperty("tdmId", tdm_id+"");
+                    
+                    Dstinfo.setProperty("srcIp", srcIp);
+                    Dstinfo.setProperty("dstIp", dstIp);
 
-    	        m_cpTable.insertEntry( Srcinfo,  Dstinfo);
-    		}
-    		
-    		else if (dir.equals("PC")) {
-    			Srcinfo.setProperty("srcIp", srcIp);
-    	        Srcinfo.setProperty("dstIp", dstIp);
-    	        log ("srcIp : " + srcIp);
-    			Dstinfo.setProperty("swTo", inSw+"");
-    			Dstinfo.setProperty("lambda", lambda+"");
-    			Dstinfo.setProperty("tdmId", tdm_id+"");
+                    m_cpTable.insertEntry( Srcinfo,  Dstinfo);
+                }
+                
+                else if (dir.equals("PC")) {
+                    Srcinfo.setProperty("srcIp", srcIp);
+                    Srcinfo.setProperty("dstIp", dstIp);
+                    log ("srcIp : " + srcIp);
+                    Dstinfo.setProperty("swTo", inSw+"");
+                    Dstinfo.setProperty("lambda", lambda+"");
+                    Dstinfo.setProperty("tdmId", tdm_id+"");
 
-    	        m_cpTable.insertEntry( Srcinfo,  Dstinfo);
-    		} else {
-                return false;
-            }
-    	}
-        
-        else if (msgtype == CircusCommConst.mtype_remove_ps) {
-    		
-    		if(dir.equals("CP")){
-    	        Srcinfo.setProperty("swFrom", inSw+"");
-    	        Srcinfo.setProperty("lambda", lambda+"");
-    	        Srcinfo.setProperty("tdmId", tdm_id+"");
-    	        
-    	        Dstinfo.setProperty("srcIp", srcIp);
-    	        Dstinfo.setProperty("dstIp", dstIp);
-
-    	        m_cpTable.removeEntry( Srcinfo);
-    		} else if (dir.equals("PC")){
-    			Srcinfo.setProperty("srcIp", srcIp);
-    	        Srcinfo.setProperty("dstIp", dstIp);
-    	        
-    			Dstinfo.setProperty("swTo", inSw+"");
-    			Dstinfo.setProperty("lambda", lambda+"");
-    			Dstinfo.setProperty("tdmId", tdm_id+"");
-
-    	        m_cpTable.removeEntry( Srcinfo);
-    		} else {
-                return false;
-            }
-    	}
-        
-        else if (msgtype == CircusCommConst.mtype_modify_ps) {
-    		
-    		if(dir.equals("CP")){
-    	        Srcinfo.setProperty("swFrom", inSw+"");
-    	        Srcinfo.setProperty("lambda", lambda+"");
-    	        Srcinfo.setProperty("tdmId", tdm_id+"");
-    	        
-    	        Dstinfo.setProperty("srcIp", srcIp);
-    	        Dstinfo.setProperty("dstIp", dstIp);
-    	        if(m_cpTable.removeEntry(Srcinfo)){
-    	        	m_cpTable.insertEntry( Srcinfo,  Dstinfo);
-    	        }
-    	        else {
-    	        	log ("Ooops: fail to reconfig");
+                    m_cpTable.insertEntry( Srcinfo,  Dstinfo);
+                } else {
                     return false;
-    	        }
-    		}
-    		
-    		else if(dir.equals("PC")){
-    			Srcinfo.setProperty("srcIp", srcIp);
-    	        Srcinfo.setProperty("dstIp", dstIp);
-    	        
-    			Dstinfo.setProperty("swTo", inSw+"");
-    			Dstinfo.setProperty("lambda", lambda+"");
-    			Dstinfo.setProperty("tdmId", tdm_id+"");
-
-    			if(m_cpTable.removeEntry(Srcinfo)){
-    	        	m_cpTable.insertEntry( Srcinfo,  Dstinfo);
-    	        }
-    	        else {
-    	        	log ("Ooops: fail to reconfig");
-                    return false;
-    	        }    
+                }
             }
-    	}
-        else if (msgtype == CircusCommConst.mtype_dofwd_pkt) {
+            
+            else if (msgtype == CircusCommConst.mtype_remove_ps) {
+                
+                if(dir.equals("CP")){
+                    Srcinfo.setProperty("swFrom", inSw+"");
+                    Srcinfo.setProperty("lambda", lambda+"");
+                    Srcinfo.setProperty("tdmId", tdm_id+"");
+                    
+                    Dstinfo.setProperty("srcIp", srcIp);
+                    Dstinfo.setProperty("dstIp", dstIp);
+
+                    m_cpTable.removeEntry( Srcinfo);
+                } else if (dir.equals("PC")){
+                    Srcinfo.setProperty("srcIp", srcIp);
+                    Srcinfo.setProperty("dstIp", dstIp);
+                    
+                    Dstinfo.setProperty("swTo", inSw+"");
+                    Dstinfo.setProperty("lambda", lambda+"");
+                    Dstinfo.setProperty("tdmId", tdm_id+"");
+
+                    m_cpTable.removeEntry( Srcinfo);
+                } else {
+                    return false;
+                }
+            }
+            
+            else if (msgtype == CircusCommConst.mtype_modify_ps) {
+                
+                if(dir.equals("CP")){
+                    Srcinfo.setProperty("swFrom", inSw+"");
+                    Srcinfo.setProperty("lambda", lambda+"");
+                    Srcinfo.setProperty("tdmId", tdm_id+"");
+                    
+                    Dstinfo.setProperty("srcIp", srcIp);
+                    Dstinfo.setProperty("dstIp", dstIp);
+                    if(m_cpTable.removeEntry(Srcinfo)){
+                        m_cpTable.insertEntry( Srcinfo,  Dstinfo);
+                    }
+                    else {
+                        log ("Ooops: fail to reconfig");
+                        return false;
+                    }
+                }
+                
+                else if(dir.equals("PC")){
+                    Srcinfo.setProperty("srcIp", srcIp);
+                    Srcinfo.setProperty("dstIp", dstIp);
+                    
+                    Dstinfo.setProperty("swTo", inSw+"");
+                    Dstinfo.setProperty("lambda", lambda+"");
+                    Dstinfo.setProperty("tdmId", tdm_id+"");
+
+                    if(m_cpTable.removeEntry(Srcinfo)){
+                        m_cpTable.insertEntry( Srcinfo,  Dstinfo);
+                    }
+                    else {
+                        log ("Ooops: fail to reconfig");
+                        return false;
+                    }    
+                }
+            }
+        } else {
             
             byte[] rawPkt = cco.getRawPacket ();
             CircusConfig cfg = CircusConfig.getConfig ();
-            
-            /* lookup PS info */
             
             try {
                 int port = cfg.getPsPort (selfID);
@@ -289,11 +290,11 @@ public class CPSwitch extends CSwitch implements DebugInterface, DataPlaneHandle
     public boolean parsecco_CS (CircusCommObj cco) {
         
     	int msgtype = cco.getMsgType();
-    	int dstSw= cco.getDstSw();
-		int srcSw= cco.getSrcSw();
-		int inlambda= cco.getinLambda();
-		int outlambda= cco.getoutLambda();
-		int tdm_id= cco.getTdmId();
+    	int dstSw = cco.getDstSw();
+		int srcSw = cco.getSrcSw();
+		int inlambda = cco.getinLambda();
+		int outlambda = cco.getoutLambda();
+		int tdm_id = cco.getTdmId();
 		
     	boolean result = true;
 		
