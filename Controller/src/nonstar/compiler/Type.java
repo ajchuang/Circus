@@ -83,7 +83,7 @@ public class Type {
 			if(type1.primary_type==PrimaryType.INTEGER && type2.primary_type==PrimaryType.INTEGER){
 				return BOOLEAN;
 			}
-			if("==".equals(op) && (type1.primary_type == PrimaryType.NULL && PrimaryType.nullable(type2.primary_type) 
+			if(("==".equals(op) || "!=".equals(op)) && (type1.primary_type == PrimaryType.NULL && PrimaryType.nullable(type2.primary_type) 
 					|| type2.primary_type == PrimaryType.NULL && PrimaryType.nullable(type1.primary_type) )){
 				return BOOLEAN;
 			}
@@ -161,11 +161,21 @@ public class Type {
 				func.parameters.add(AttributeObj.newAttributeObjByTypeID(type.second_type, "key"));
 				
 			}
+			else if(id.equals("containsKey")){
+				func.return_type = type.BOOLEAN;
+				func.parameters.add(AttributeObj.newAttributeObjByTypeID(type.second_type, "key"));
+				
+			}
 			else if(id.equals("clear")){
 				func.return_type = Type.VOID;
 			}
-			sr = new SymbolRecord(id);
-			sr.setValue(false, func);
+			else{
+				fail = true;
+			}
+			if(!fail) {
+				sr = new SymbolRecord(id);
+				sr.setValue(false, func);
+			}
 			return sr;
 		}		
 		

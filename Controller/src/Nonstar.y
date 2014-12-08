@@ -754,7 +754,7 @@ RelationalBinaryOperator
 
   private Yylex lexer;
   static boolean success = true;
-  static boolean debug = false;
+  static boolean debug = true;
 
   private int yylex () {
     int yyl_return = -1;
