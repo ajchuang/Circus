@@ -14,5 +14,5 @@ public abstract class NetworkTopo {
 
 	public abstract Flow getCurrCircuit(Switch srcSw, Switch dstSw);
 	public abstract Flow setupCircuit(Switch srcSw, Switch dstSw);
-
+	public abstract Flow tearCircuit(Switch srcSw, Switch dstSw);
 }

@@ -150,6 +150,8 @@ public class NetworkEnv extends NetworkTopo {
 				//					flow = setupCircuit(srcSw.getId(), dstSw.getId());
 
 				if (flow != null) {
+					flow.setSrcIp(ppkt.getSrcIp());
+					flow.setDstIp(ppkt.getDstIp());
 					if (!walkFlow(ppkt.getSrcIp(), ppkt.getDstIp(), flow))
 						log("process walkFlow failed!!!");
 					try {
@@ -488,6 +490,8 @@ public class NetworkEnv extends NetworkTopo {
 				if (flow == null) {
 					flow = setupCircuit(srcSw, dstSw);
 					if (flow != null) {
+						flow.setSrcIp(src);
+						flow.setDstIp(dst);
 						if (!walkFlow(src, dst, flow))
 							log("walkFlow failed!!!");
 						flow.addUser();
@@ -554,5 +558,20 @@ public class NetworkEnv extends NetworkTopo {
 		//walkFlow(srcSw, dstSw, flow);
 
 		return flow;
+	}
+
+	@Override
+	public Flow tearCircuit(Switch srcSw, Switch dstSw) {
+		Flow flow = getCurrCircuit(srcSw, dstSw);
+		Flow retFlow = null;
+
+		if (flow != null) {
+			if (!eraseFlow(flow.getSrcIp(), flow.getDstIp(), flow))
+				log("eraseFlow failed!!!");
+			if (flow.removeUser())
+				retFlow = pullCircuit(srcSw.getId(), dstSw.getId());
+		}
+
+		return retFlow;
 	}
 }

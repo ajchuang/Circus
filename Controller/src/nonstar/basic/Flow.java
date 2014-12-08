@@ -1,10 +1,12 @@
 package nonstar.basic;
 
+import java.net.InetAddress;
 import java.util.Iterator;
 import java.util.LinkedList;
 
 public class Flow {
 	int userCount;
+	InetAddress srcIp, dstIp;
 	LinkedList<Link> link;
 	LinkedList<Switch> sw;
 
@@ -53,5 +55,21 @@ public class Flow {
 
 	public boolean containsSwitch(Switch s) {
 		return sw.contains(s);
+	}
+
+	public void setSrcIp(InetAddress ip) {
+		srcIp = ip;
+	}
+
+	public InetAddress getSrcIp() {
+		return srcIp;
+	}
+
+	public void setDstIp(InetAddress ip) {
+		dstIp = ip;
+	}
+
+	public InetAddress getDstIp() {
+		return dstIp;
 	}
 }
