@@ -1,0 +1,31 @@
+Nonstar {
+  adb : "asdf";
+  num : 1;
+  flag : true;
+}
+
+on_start# {
+  int a = num;
+  int b = 3;
+  Dict<int, int> map;
+  if ( a + b < 11 ) {
+    return;
+  }
+  foreach(int i in map){
+    a = map.get(i);
+  }
+}
+
+int foo(int a, int b) {
+  return (a + b);
+}
+
+on_req# {
+  foo(11, 12);
+  Flow f;
+  List<int> l;
+  foreach(int i in l){
+    foo(i, i);
+  }
+  return f;
+}

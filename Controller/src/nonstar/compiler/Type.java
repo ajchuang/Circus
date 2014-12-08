@@ -38,6 +38,29 @@ public class Type {
 		return this.primary_type == PrimaryType.LIST;
 	}
 	
+	public String defaultInitialization() {
+		String tail;
+		if(this.isDict() || this.isList()) {
+			tail = " = new " + toString() + "()";
+		}
+		else if(PrimaryType.nullable(this.primary_type)) {
+			tail = " = null";
+		}
+		else if(this.primary_type == PrimaryType.INTEGER) {
+			tail = " = 0";
+		}
+		else if(this.primary_type == PrimaryType.BOOLEAN) {
+			tail = " = true";
+		}
+		else if(this.primary_type == PrimaryType.STRING) {
+			tail = " = \"\"";
+		}
+		else{
+			return "";
+		}
+		return tail;
+	}
+	
 	public static Type unaryOP(String op, Type type){
 		if("!".equals(op) || "~".equals(op)){
 			if(type.primary_type==PrimaryType.BOOLEAN){
@@ -82,71 +105,67 @@ public class Type {
 	
 	public static SymbolRecord dotOP(Type type, String id){
 		
+		SymbolRecord sr = null;
 		if(type.equals(Type.SWITCH)){
 			return SymbolTable.switchBlock.accessSymbolInThisScope(id);
 		}
 		else if(type.equals(Type.FLOW)){
 			return SymbolTable.flowBlock.accessSymbolInThisScope(id);
 		}
-//		else if(type.primary_type == PrimaryType.LIST){
-//			if(id.equals("add")){
-//				FunctionObj func = new FunctionObj();
-//				func.id = "add";
-//				func.return_type = Type.VOID;
-//				func.parameters = new ArrayList<AttributeObj>();
-//				func.parameters.add(new AttributeObj("obj", type.second_type));
-//				SymbolRecord sr = new SymbolRecord("add");
-//				sr.setValue(false, func);
-//				return sr;
-//			}
-//			else if(id.equals("get")){
-//				FunctionObj func = new FunctionObj();
-//				func.id = "get";
-//				func.return_type = type.second_type;
-//				func.parameters = new ArrayList<AttributeObj>();
-//				func.parameters.add(new AttributeObj("index", type.INTEGER));
-//				SymbolRecord sr = new SymbolRecord("get");
-//				sr.setValue(false, func);
-//				return sr;
-//			}
-//			else if(id.equals("clear")){
-//				FunctionObj func = new FunctionObj();
-//				func.id = "clear";
-//				func.return_type = Type.VOID;
-//				func.parameters = new ArrayList<AttributeObj>();
-//				SymbolRecord sr = new SymbolRecord("clear");
-//				sr.setValue(false, func);
-//				return sr;
-//			}
-//			return null;
-//		}
-//		else if(type.primary_type == PrimaryType.DICT){
-//			if(id.equals("put")){
-//				FunctionObj func = new FunctionObj();
-//				func.id = "put";
-//				func.return_type = Type.VOID;
-//				func.parameters = new ArrayList<AttributeObj>();
-//				func.parameters.add(new AttributeObj("key", type.second_type));
-//				func.parameters.add(new AttributeObj("value", type.third_type));
-//				SymbolRecord sr = new SymbolRecord("put");
-//				sr.setValue(false, func);
-//				return sr;
-//			}
-//			else if(id.equals("get")){
-//				FunctionObj func = new FunctionObj();
-//				func.id = "get";
-//				func.return_type = type.third_type;
-//				func.parameters = new ArrayList<AttributeObj>();
-//				func.parameters.add(new AttributeObj("key", type.second_type));
-//				SymbolRecord sr = new SymbolRecord("get");
-//				sr.setValue(false, func);
-//				return sr;
-//			}
-//			
-//			return null;
-//		}
-//			
-//		
+		else if(type.primary_type == PrimaryType.LIST){
+			FunctionObj func = new FunctionObj();
+			func.id = id;
+			func.parameters = new ArrayList<AttributeObj>();
+			boolean fail = false;
+			
+			if(id.equals("add")){	
+				func.return_type = Type.VOID;	
+				func.parameters.add(AttributeObj.newAttributeObjByTypeID(type.second_type, "obj"));
+			}
+			else if(id.equals("get")){
+				func.return_type = type.second_type;		
+				func.parameters.add(AttributeObj.newAttributeObjByTypeID(Type.INTEGER, "index"));
+			}
+			else if(id.equals("size")){
+				func.return_type = Type.INTEGER;
+			}
+			else if(id.equals("clear")){
+				func.return_type = Type.VOID;
+			}
+			else{
+				fail = true;
+			}
+			if(!fail) {
+				sr = new SymbolRecord(id);
+				sr.setValue(false, func);
+			}
+			return sr;
+		}
+		else if(type.primary_type == PrimaryType.DICT){
+			FunctionObj func = new FunctionObj();
+			func.id = id;
+			func.parameters = new ArrayList<AttributeObj>();
+			boolean fail = false;
+			
+			if(id.equals("put")){
+				func.return_type = Type.VOID;
+				func.parameters.add(AttributeObj.newAttributeObjByTypeID(type.second_type, "key"));
+				func.parameters.add(AttributeObj.newAttributeObjByTypeID(type.third_type, "value"));
+				
+			}
+			else if(id.equals("get")){
+				func.return_type = type.third_type;
+				func.parameters.add(AttributeObj.newAttributeObjByTypeID(type.second_type, "key"));
+				
+			}
+			else if(id.equals("clear")){
+				func.return_type = Type.VOID;
+			}
+			sr = new SymbolRecord(id);
+			sr.setValue(false, func);
+			return sr;
+		}		
+		
 		return null;
 	}
 	

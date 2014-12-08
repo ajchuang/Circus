@@ -376,7 +376,8 @@ field_declaration
     if(!SymbolTable.putInLocal($2, dcl)){
       yyerror(Util.newIDErr($2)); 
     }
-    $$ = type.toString() + " " + $2 + ";";
+    String tail = type.defaultInitialization();
+    $$ = type.toString() + " " + $2 + tail + ";";
   }
 | type ID '=' Expression ';' 
   {
