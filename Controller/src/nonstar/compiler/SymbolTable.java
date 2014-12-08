@@ -132,60 +132,9 @@ public class SymbolTable {
 		addFunctionRecordToScope("getCurrCircuit", nonstarBlock, Type.FLOW, parameters);
 		addFunctionRecordToScope("setupCircuit", nonstarBlock, Type.FLOW, parameters);
 		
-//		ArrayList<AttributeObj> parameters;
-//		addAttributeRecordToScope("id", playerBlock, Type.INTEGER);
-//		addAttributeRecordToScope("handCards", playerBlock, new Type(PrimaryType.LIST,Type.CARD,null));
-//		parameters = new ArrayList<AttributeObj>();
-//		parameters.add(new AttributeObj("character", Type.CHARACTER));
-//		addFunctionRecordToScope("setCharacter", playerBlock, Type.VOID, parameters);
-//		
-//		addAttributeRecordToScope("playerList", gameBlock, new Type(PrimaryType.LIST, Type.PLAYER, null));
-//		addAttributeRecordToScope("cardStack", gameBlock, new Type(PrimaryType.LIST, Type.CARD, null));
-//		addAttributeRecordToScope("droppedCardStack", gameBlock, new Type(PrimaryType.LIST, Type.CARD, null));
-//		addAttributeRecordToScope("gameover", gameBlock, Type.BOOLEAN);
-//		addAttributeRecordToScope("roundSummary", gameBlock, new Type(PrimaryType.DICT, Type.INTEGER, Type.CARD));
-//		
-//		parameters = new ArrayList<AttributeObj>();
-//		parameters.add(new AttributeObj("msg", Type.STRING));
-//		addFunctionRecordToScope("broadcast", gameBlock, Type.VOID, parameters);
-//		
-//		parameters = new ArrayList<AttributeObj>();
-//		parameters.add(new AttributeObj("player", Type.PLAYER));
-//		parameters.add(new AttributeObj("msg", Type.STRING));
-//		addFunctionRecordToScope("sendToOnePlayer", gameBlock, Type.VOID, parameters);
-//		
-//		parameters = new ArrayList<AttributeObj>();
-//		addFunctionRecordToScope("GameGeneralInfo", gameBlock, Type.STRING, parameters);
-//		parameters = new ArrayList<AttributeObj>();
-//		addFunctionRecordToScope("PlayersInfo", gameBlock, Type.STRING, parameters);
-//		parameters = new ArrayList<AttributeObj>();
-//		parameters.add(new AttributeObj("player", Type.PLAYER));
-//		addFunctionRecordToScope("HandCardInfo", gameBlock, Type.STRING, parameters);
-//		
-//		parameters = new ArrayList<AttributeObj>();
-//		parameters.add(new AttributeObj("player", Type.PLAYER));
-//		parameters.add(new AttributeObj("promt", Type.STRING));
-//		parameters.add(new AttributeObj("range", Type.INTEGER));
-//		addFunctionRecordToScope("waitForChoice", gameBlock, Type.INTEGER, parameters);
-//		parameters = new ArrayList<AttributeObj>();
-//		parameters.add(new AttributeObj("player", Type.PLAYER));
-//		addFunctionRecordToScope("waitForSkill", gameBlock, Type.BOOLEAN, parameters);
-//		parameters = new ArrayList<AttributeObj>();
-//		parameters.add(new AttributeObj("player", Type.PLAYER));
-//		addFunctionRecordToScope("waitForTarget", gameBlock, Type.PLAYER, parameters);
-//		
-//		parameters = new ArrayList<AttributeObj>();
-//		parameters.add(new AttributeObj("player", Type.PLAYER));
-//		addFunctionRecordToScope("putCard", gameBlock, Type.CARD, parameters);
-//		parameters = new ArrayList<AttributeObj>();
-//		parameters.add(new AttributeObj("player", Type.PLAYER));
-//		parameters.add(new AttributeObj("num", Type.INTEGER));
-//		addFunctionRecordToScope("drawCard", gameBlock, Type.VOID, parameters);
-//		
-//		parameters = new ArrayList<AttributeObj>();
-//		parameters.add(new AttributeObj("list", new Type(PrimaryType.LIST, null, null)));
-//		addFunctionRecordToScope("shuffle", gameBlock, Type.VOID, parameters);
-//		
+		parameters = new ArrayList<AttributeObj>();
+		addFunctionRecordToScope("getID", switchBlock, Type.INTEGER, parameters);
+		addFunctionRecordToScope("containsSwitch", flowBlock, Type.BOOLEAN, parameters);
 	}
 
 	

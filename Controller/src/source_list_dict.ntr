@@ -2,6 +2,8 @@ Nonstar {
   adb : "asdf";
   num : 1;
   flag : true;
+  li : List<int>();
+  mm : Dict<int, Switch>();
 }
 
 on_start# {

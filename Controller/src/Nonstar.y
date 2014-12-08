@@ -67,6 +67,7 @@
 %type <sval> statement_list
 %type <sval> statement
 %type <obj> type
+%type <obj> dict_list_type
 %type <obj> non_void_type
 %type <obj> parameter_config
 %type <obj> parameter_config_list
@@ -174,6 +175,7 @@ block
       yyerror("Function " + func.id + " does not have proper return");
     }
     SymbolTable.popLocalBlock();
+    yydebug("Fucntion " + func.id + " compiled");
     $$ = func;
   }
   ;
@@ -274,18 +276,26 @@ type
 non_void_type
 : FLOW { $$ = Type.FLOW; }
 | SWITCH { $$ = Type.SWITCH; }
-| LIST '<' type '>' 
+| dict_list_type 
+  {
+    yydebug("type -> dict_list_type");
+    $$ = $1;
+  }
+| primitive_type { $$ = $1; }
+  ;
+dict_list_type
+: LIST '<' type '>' 
   {
     Type second_type = (Type)$3;
     $$ = new Type(PrimaryType.LIST, second_type, null);
   }
 | DICT '<' type ',' type '>' 
   {
+    yydebug("dict type");
     Type second_type = (Type)$3;
     Type third_type = (Type)$5;
     $$ = new Type(PrimaryType.DICT, second_type, third_type);
   }
-| primitive_type { $$ = $1; }
   ;
 primitive_type
 : DECLR_INT { $$ = Type.INTEGER; }
@@ -298,6 +308,12 @@ value
 | TRUE { $$=AttributeObj.newAttributeObjByTypeValue(Type.BOOLEAN, "true"); }
 | FALSE { $$=AttributeObj.newAttributeObjByTypeValue(Type.BOOLEAN, "false"); }
 | NULL { $$=AttributeObj.newAttributeObjByTypeValue(Type.NULL, "null");}
+| dict_list_type '(' ')' 
+  {
+    yydebug("value -> dict_list_type");
+    Type type = (Type)$1;
+    $$=AttributeObj.newAttributeObjByTypeValue(type, type.defaultInitialization());
+  }
   ;
 /* ----------------------------------------------------------- */
 block
@@ -305,9 +321,17 @@ block
 | '{' '}' { $$ = ""; }
   ;
 statement_list
-: statement_list statement { $$ = $1 + "\t\t" + $2 + "\n"; }
-| statement { $$ = $1 + "\n"; }
-	;
+: statement_list statement 
+  {
+    yydebug("Compiled\n  " + $2);
+    $$ = $1 + "\t\t" + $2 + "\n"; 
+  }
+| statement 
+  {
+    yydebug("Compiled\n  " + $1);
+    $$ = $1 + "\n";
+  }
+  ;
 statement
 : selection_statement { $$ = $1; }
 | field_declaration { $$ = $1; }
@@ -369,7 +393,7 @@ if_condition_block: IF '(' Expression ')' { SymbolTable.newLocalBlock(); } block
   }
   ;
 field_declaration
-: type ID ';'
+: non_void_type ID ';'
   {
     Type type = (Type)$1;
     AttributeObj dcl = AttributeObj.newAttributeObjByTypeID(type, $2);
@@ -377,9 +401,12 @@ field_declaration
       yyerror(Util.newIDErr($2)); 
     }
     String tail = type.defaultInitialization();
-    $$ = type.toString() + " " + $2 + tail + ";";
+    if(tail == null){
+      yyerror("type error");
+    }
+    $$ = type.toString() + " " + $2 + " = " + tail + ";";
   }
-| type ID '=' Expression ';' 
+| non_void_type ID '=' Expression ';' 
   {
     Type type = (Type)$1;
     Expression exp = (Expression)$4;

@@ -39,26 +39,29 @@ public class Type {
 	}
 	
 	public String defaultInitialization() {
-		String tail;
+		String initializer;
 		if(this.isDict() || this.isList()) {
-			tail = " = new " + toString() + "()";
+			initializer = "new " + toString() + "()";
 		}
 		else if(PrimaryType.nullable(this.primary_type)) {
-			tail = " = null";
+			initializer = "null";
 		}
 		else if(this.primary_type == PrimaryType.INTEGER) {
-			tail = " = 0";
+			initializer = "0";
 		}
 		else if(this.primary_type == PrimaryType.BOOLEAN) {
-			tail = " = true";
+			initializer = "true";
 		}
 		else if(this.primary_type == PrimaryType.STRING) {
-			tail = " = \"\"";
+			initializer = "\"\"";
+		}
+		else if(this.primary_type == PrimaryType.DOUBLE) {
+			initializer = "0";
 		}
 		else{
-			return "";
+			initializer = null;
 		}
-		return tail;
+		return initializer;
 	}
 	
 	public static Type unaryOP(String op, Type type){
