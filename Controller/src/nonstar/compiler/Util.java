@@ -63,6 +63,11 @@ public class Util {
 						
 						if(procedures != null)
 							for(FunctionObj func : procedures){
+								
+								if(func == null){
+									continue;
+								}
+								
 								if(func.equals(onstart))
 									saw_onstart = true;
 								if(func.equals(onreq))
@@ -135,7 +140,7 @@ public class Util {
 			sb.append(para.id);
 		}
 		sb.append(") ");
-		sb.append(" {\n\t");
+		sb.append(" {\n\t\t");
 		sb.append(func.body);
 		sb.append("\n\t}\n\t");
 	}
@@ -148,17 +153,37 @@ public class Util {
 		SymbolTable.current = 2;
 	}
 	
-	public static String findIDErr(String id) {
-		return "Can not find ID " + id;
+	public static String findIDErr(String id, String quarlifiedName) {
+		return "Can not find ID " + id + (quarlifiedName==null?"":" in " + quarlifiedName);
 	}
 	
 	public static String newIDErr(String id) {
 		return SymbolTable.errMsgNewID(id);
 	}
 	
+	public static String assignExpErr(String ee, String er) {
+		return "Assign " + ee + " with " + er + " failed (type conflicts)";
+	}
+	
+	public static String useExpAsTypeErr(String exp, Type type) {
+		return exp + " can not be " + type.toString();
+	}
+	
+	public static String foreachErr(String item, String exp) {
+		return item + " and " + exp + " can not be used in foreach"; 
+	}
+	
+	public static String quarlifiedNameErr(String code, boolean shouldBeAttr) {
+		return code + " should be " + (shouldBeAttr?"an attribute":"a function");
+	}
+	
 	public static String operationErr(String op, String exp1, String exp2) {
 		// op is unary when exp2 == null
 		return op + " is not a valid operation for " + exp1 + (exp2 == null ? "" : " and " + exp2);
+	}
+	
+	public static String functionArgsErr(String func) {
+		return "Arguments list does not match definition of " + func;
 	}
 	
 	public static void main(String[] args) {

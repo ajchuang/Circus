@@ -18,8 +18,6 @@ import CircusCommunication.CircusComm;
 import CircusCommunication.CircusCommConst;
 import CircusCommunication.CircusCommObj;
 
-
-
 // cmd format: {cs_insert swId dstSw srcSw inlambda outlambda tdm_id}
 
 //cmd format: {ps_insert swId dir srcIp dstIp out/in_Sw lambda tdm_id}
@@ -43,7 +41,7 @@ public class Controller {
 		m_ctlPort = cport;
 		m_output = new ConcurrentHashMap<Integer, ObjectOutputStream> ();
 		netEnv = new NetworkEnv(this);
-		nonstar = new NonstarTemplate(netEnv);
+		nonstar = new Nonstar(netEnv);
 
 		log ("Controller: " + m_ctlPort + ":" + m_dbgPort);
 	}

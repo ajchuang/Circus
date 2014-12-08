@@ -27,5 +27,15 @@ public class FunctionObj {
 				return false;
 		return true;
 	}
+	
+	public static FunctionObj copyFunctionSignature(FunctionObj toClone) {
+		if(toClone == null)
+			return null;
+		FunctionObj func = new FunctionObj();
+		func.id = toClone.id;
+		func.return_type = toClone.return_type;
+		func.parameters = new ArrayList<AttributeObj>(toClone.parameters);
+		return func;
+	}
 
 }

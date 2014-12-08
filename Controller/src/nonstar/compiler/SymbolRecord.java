@@ -21,5 +21,14 @@ public class SymbolRecord {
 			this.func = (FunctionObj)attrOrfunc;
 		}
 	}
+	
+	public Type getType() {
+		if(isAttribute){
+			return attr.type;
+		}
+		else{
+			return func.return_type;
+		}
+	}
 
 }

@@ -23,6 +23,21 @@ public class Type {
 		this.third_type = third_type;
 	}
 	
+	public static boolean iterable(Type item, Type list) {
+		if(!PrimaryType.iterable(list.primary_type)){
+			return false;
+		}
+		return item.equals(list.second_type);
+	}
+	
+	public boolean isDict() {
+		return this.primary_type == PrimaryType.DICT;
+	}
+	
+	public boolean isList() {
+		return this.primary_type == PrimaryType.LIST;
+	}
+	
 	public static Type unaryOP(String op, Type type){
 		if("!".equals(op) || "~".equals(op)){
 			if(type.primary_type==PrimaryType.BOOLEAN){
@@ -40,6 +55,10 @@ public class Type {
 		}
 		if(">".equals(op) || "<".equals(op) || "==".equals(op) || ">=".equals(op) || "<=".equals(op) || "!=".equals(op) ){
 			if(type1.primary_type==PrimaryType.INTEGER && type2.primary_type==PrimaryType.INTEGER){
+				return BOOLEAN;
+			}
+			if("==".equals(op) && (type1.primary_type == PrimaryType.NULL && PrimaryType.nullable(type2.primary_type) 
+					|| type2.primary_type == PrimaryType.NULL && PrimaryType.nullable(type1.primary_type) )){
 				return BOOLEAN;
 			}
 		}
@@ -61,17 +80,14 @@ public class Type {
 		return null;
 	}
 	
-//	public static SymbolRecord dotOP(Type type, String id){
-//		
-//		if(type.equals(Type.CARD)){
-//			return SymbolTable.baseCardBlock.accessSymbolInThisScope(id);
-//		}
-//		else if(type.equals(Type.PLAYER)){
-//			SymbolRecord sr = SymbolTable.playerBlock.accessSymbolInThisScope(id);
-//			if(sr == null)
-//				return SymbolTable.baseCharacterBlock.accessSymbolInThisScope(id);
-//			return sr;
-//		}
+	public static SymbolRecord dotOP(Type type, String id){
+		
+		if(type.equals(Type.SWITCH)){
+			return SymbolTable.switchBlock.accessSymbolInThisScope(id);
+		}
+		else if(type.equals(Type.FLOW)){
+			return SymbolTable.flowBlock.accessSymbolInThisScope(id);
+		}
 //		else if(type.primary_type == PrimaryType.LIST){
 //			if(id.equals("add")){
 //				FunctionObj func = new FunctionObj();
@@ -131,8 +147,8 @@ public class Type {
 //		}
 //			
 //		
-//		return null;
-//	}
+		return null;
+	}
 	
 	@Override
 	public boolean equals(Object type){
@@ -164,6 +180,19 @@ public class Type {
 				&& para.primary_type == PrimaryType.LIST && para.second_type == null);
 	}
 	
+	public String toObjString(){
+		switch(primary_type){
+		case INTEGER:
+			return "Integer";
+		case  DOUBLE:
+			return "Double";
+		case  BOOLEAN:
+			return "Boolean";
+		default:
+			return this.toString();
+		}
+	}
+	
 	@Override
 	public String toString(){
 		switch(primary_type){
@@ -182,9 +211,9 @@ public class Type {
 		case  VOID:
 			return "void";
 		case  LIST:
-			return "ArrayList<"+second_type.toString()+">";
+			return "ArrayList<"+second_type.toObjString()+">";
 		case  DICT:
-			return "HashMap<"+second_type.toString()+","+third_type.toString()+">";	
+			return "HashMap<"+second_type.toObjString()+","+third_type.toObjString()+">";	
 		default:
 			System.out.println("An unknown type!");
 			return null;

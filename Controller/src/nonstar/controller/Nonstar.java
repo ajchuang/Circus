@@ -1,5 +1,8 @@
 package nonstar.controller;
 
+import java.util.HashMap;
+import java.util.ArrayList;
+
 import nonstar.basic.Flow;
 import nonstar.basic.Switch;
 
@@ -7,10 +10,17 @@ public class Nonstar extends NonstarBase {
 
 	boolean flag = true;
 	public void on_start()  {
-	
+		
 	}
 	public Flow on_req(Switch src, Switch dst)  {
-			return null;
+		Flow f = getCurrCircuit(src, dst);
+		if(f == null) {
+			f = setupCircuit(src, dst);
+
+		}
+
+		return f;
+
 	}
 	
 	

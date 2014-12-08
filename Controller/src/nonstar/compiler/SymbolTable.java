@@ -10,13 +10,15 @@ public class SymbolTable {
 	
 	public static ScopeBlock nonstarBlock = new ScopeBlock();
 	
-	public static ScopeBlock circuitBlock = new ScopeBlock();
+	public static ScopeBlock flowBlock = new ScopeBlock();
 	public static ScopeBlock switchBlock = new ScopeBlock();
 	
 	public static FunctionObj curFunction = null;
+	public static boolean curFuncHasReturn = false; // whether current function has returned (might be of wrong type)
+	public static boolean curFuncCorrectReturn = true; // whether current function has correct typed return
 	public static LinkedList<ScopeBlock> function_locals = new LinkedList<ScopeBlock>();
 	
-	public static HashSet<String> current_all_IDs = null;
+	//public static HashSet<String> current_all_IDs = null;
 	public static HashSet<String> all_IDs = new HashSet<String>();
 	
 	public static String errMsgNewID(String id) {
@@ -92,16 +94,16 @@ public class SymbolTable {
 		FunctionObj func = new FunctionObj();
 		func.id = id;
 		func.return_type = return_type;
-		func.parameters = parameters;
+		func.parameters = new ArrayList<AttributeObj>(parameters);
 		sr.setValue(false, func);
 	}
 	
 	public static void initSymbolTable(){
 //				
 		// Can not be used in Nonstar because they are types/keywords in Java 
-		String[] java_reserved = {"Exception", "boolean", "try", "final", "finally", "System",
-				"catch", "public", "protected", "private", "static", "HashMap", "ArrayList",
-				"java"};
+		String[] java_reserved = {"Exception", "boolean", "Integer", "Boolean", 
+				"try", "final", "finally", "System", "catch", "public", "protected", 
+				"private", "static", "HashMap", "ArrayList", "java"};
 		// Can not be used in Nonstar because they are Nonstar keywords
 		String[] nonstar_keywords = {"Nonstar", "void", "int", "String", "boolean", 
 				"true", "false", "in"};
@@ -122,6 +124,13 @@ public class SymbolTable {
 			reservedBlock.addRecord(id);
 			all_IDs.add(id);
 		}
+		
+		ArrayList<AttributeObj> parameters;
+		parameters = new ArrayList<AttributeObj>();
+		parameters.add(AttributeObj.newAttributeObjByTypeID(Type.SWITCH, "src"));
+		parameters.add(AttributeObj.newAttributeObjByTypeID(Type.SWITCH, "dst"));
+		addFunctionRecordToScope("getCurrCircuit", nonstarBlock, Type.FLOW, parameters);
+		addFunctionRecordToScope("setupCircuit", nonstarBlock, Type.FLOW, parameters);
 		
 //		ArrayList<AttributeObj> parameters;
 //		addAttributeRecordToScope("id", playerBlock, Type.INTEGER);

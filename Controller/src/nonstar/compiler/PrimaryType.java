@@ -24,4 +24,8 @@ public enum PrimaryType {
 	public static boolean nullable(PrimaryType type) {
 		return !isPrimary(type) && !isVoid(type) && !isNull(type);
 	}
+	
+	public static boolean iterable(PrimaryType type) {
+		return type == PrimaryType.LIST || type == PrimaryType.DICT;
+	}
 }

@@ -1,0 +1,14 @@
+Nonstar {
+  flag : true;
+}
+
+on_start# {
+}
+
+on_req# {
+  Flow f = getCurrCircuit(src, dst);
+  if(f == null){
+    f = setupCircuit(src, dst);
+  }
+  return f;
+}
