@@ -110,8 +110,6 @@ ws = {delim}+
 "null"  {return Parser.NULL;}
 {VOID} {return Parser.VOID;}
 
-"statement_list" {yyparser.yylval = new ParserVal("statement_list"); ;return Parser.STATLIST;}
-
 {ID} { yyparser.yylval = new ParserVal(yytext()); return Parser.ID;}
 
 /*debug*/

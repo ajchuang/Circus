@@ -62,8 +62,6 @@
 %type <obj> json
 %type <sval> block
 
-%token <sval> STATLIST
-
 %type <sval> statement_list
 %type <sval> statement
 %type <obj> type
@@ -115,6 +113,14 @@ source_code: { Util.init(); Util.startCompilingNonstarConfig(); } nonstar_config
     Util.genNonstar(nonstar_config, procedures);
     yydebug("source_code finished");
   }
+| { Util.init(); Util.startCompilingProcedures(); } procedures_list
+  {
+    ArrayList<AttributeObj> nonstar_config = new ArrayList<AttributeObj>();
+    ArrayList<FunctionObj> procedures = (ArrayList<FunctionObj>)$2;
+    Util.genNonstar(nonstar_config, procedures);
+    yydebug("source_code finished");
+  }
+| { Util.init(); Util.startCompilingProcedures(); } procedures_list
   ;
 nonstar_config: NONSTAR_DF json
   {
@@ -748,6 +754,7 @@ RelationalBinaryOperator
 
   private Yylex lexer;
   static boolean success = true;
+  static boolean debug = false;
 
   private int yylex () {
     int yyl_return = -1;
@@ -763,7 +770,8 @@ RelationalBinaryOperator
   }
 
   public void yydebug (String msg) {
-    System.out.println("Compiling: " + msg);
+    if(debug)
+      System.out.println("Compiling: " + msg);
   }
 
   public void yyerror (String error) {

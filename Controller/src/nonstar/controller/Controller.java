@@ -49,8 +49,9 @@ public class Controller {
 	public Flow receiveReq(Switch src, Switch dst) {
 		return nonstar.onreq(src, dst);
 	}
-
+	
 	public void startService () {
+		nonstar.onstart();
 		new Thread (new CPlaneServ (m_ctlPort, this)).start ();
 		new Thread (new DebugServer (m_dbgPort, this)).start ();
 	}
