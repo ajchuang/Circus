@@ -50,4 +50,8 @@ public class Flow {
 	public Iterator<Switch> getSwIter() {
 		return sw.iterator();
 	}
+
+	public boolean containsSwitch(Switch s) {
+		return sw.contains(s);
+	}
 }
