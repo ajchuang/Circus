@@ -13,6 +13,7 @@ public abstract class Switch {
 	ObjectOutputStream objOutStream;
 
 	public void setId(int swId) {
+		id = swId;
 	}
 
 	public int getId() {
