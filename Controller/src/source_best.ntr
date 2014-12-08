@@ -19,7 +19,7 @@ int getSwitchCount(Switch sw) {
 }
 
 void incrementSwichCount(Dict<Switch,int> map, Switch sw) {
-    if(map.containsKey(sw)){
+    if(!map.containsKey(sw)){
       map.put(sw, 1);
     }
     else{

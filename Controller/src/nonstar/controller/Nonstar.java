@@ -30,7 +30,7 @@ public class Nonstar extends NonstarBase {
 
 	}
 	public void incrementSwichCount(HashMap<Switch,Integer> map, Switch sw)  {
-		if(map.containsKey(sw)) {
+		if(!map.containsKey(sw)) {
 			map.put(sw, 1);
 
 		}

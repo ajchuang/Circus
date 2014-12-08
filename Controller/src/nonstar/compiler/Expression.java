@@ -29,7 +29,11 @@ public class Expression extends RecursiveState {
 			
 			return exp;
 		}
-		Type return_type = Type.binaryOP(op, exp1.return_type, exp2.return_type);
+		Type return_type;
+		if(exp2 != null)
+			return_type = Type.binaryOP(op, exp1.return_type, exp2.return_type);
+		else
+			return_type = Type.unaryOP(op, exp1.return_type);
 		exp.return_type = return_type;
 	    if(return_type == null){ 
 	    	exp.semantically_fine = false;
