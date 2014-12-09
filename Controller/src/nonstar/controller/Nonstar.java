@@ -45,7 +45,7 @@ public class Nonstar extends NonstarBase {
 	public Flow on_req(Switch src, Switch dst)  {
 		Flow f = getCurrCircuit(src, dst);
 		if(f == null) {
-			if(getSwitchCount(src) < 3 || getSwitchCount(dst) < 3) {
+			if(getSwitchCount(src) < 1) {
 			f = setupCircuit(src, dst);
 
 		}
